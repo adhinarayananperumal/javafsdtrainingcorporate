@@ -1,0 +1,11 @@
+spring:
+   config:
+     import: optional:configserver:http://localhost:8888
+     label: main
+   application:
+    name: bapayment-client  #current service name to be used by the eureka server
+   profiles:
+    active: development
+
+server:
+  port: 2345
