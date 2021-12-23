@@ -1,0 +1,15 @@
+server:
+  port: 8095
+
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: customerModule
+        uri: http://localhost:8098/
+        predicates:
+        - Path=/api/customer/**
+      - id: schoolModule
+        uri: http://localhost:8099/
+        predicates:
+        - Path=/api/school/**
