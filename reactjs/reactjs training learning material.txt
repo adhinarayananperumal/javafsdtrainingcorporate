@@ -14,3 +14,33 @@ rest operator
 spread operator
 promise
 Async wait
+
+
+Single page application
+DOM - When a web page is loaded, the browser creates a Document Object Model of the page.
+jsx
+Create react application
+application flow
+Functional component
+Class component
+class component life cycle
+props state
+Routing
+Form
+Hook
+Axios api call
+CRUD
+Lifting state up
+HOC
+Redux
+
+
+
+
+https://reactjs.org/docs/create-a-new-react-app.html
+
+install node js
+install npm -  like maven 
+
+Creat react application
+>  npx create-react-app iciciibanking
