@@ -41,7 +41,7 @@ async function eat(order, payment){
         console.log("Order received by the customer...");
         console.log("Collect payment.");
         await make_payment(payment);
-        console.log("Payment received." + m);
+        console.log("Payment received.");
     }
     // Catching errors or rejected promises
     catch (error){
@@ -52,3 +52,4 @@ async function eat(order, payment){
 // Customer places his/her order and specifies the amount to pay
 // Play around with these parameters to fully understand what is going on.
 eat("Hamburger", 20);
+console.log("end flow");
