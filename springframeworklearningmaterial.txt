@@ -64,7 +64,7 @@ FileSystemXmlApplicationContext.
 
 
 
-Samples of Configuration bean in configuration file
+Sample's of Configuration bean in configuration file
 1. XML Based
 2. Java-based configuration
 
@@ -711,6 +711,751 @@ in a predictable and repeatable way. And when used in conjunction with Zipkin, y
 latency problems you might have.
 
 
+
+
+Spring’s support for integration testing and best practices for unit testing.
+
+MockMvc
+The Spring MVC Test framework, also known as MockMvc, provides support for testing Spring MVC applications. 
+It performs full Spring MVC request handling but via mock request and response objects instead of a running server.
+
+MockMvc can be used on its own to perform requests and verify responses. It can also be used through the WebTestClient where 
+MockMvc is plugged in as the server to handle requests with. The advantage of WebTestClient is the option to work with higher 
+level objects instead of raw data as well as the ability to switch to full, end-to-end HTTP tests against a live server and use 
+the same test API.
+
+Testing Client Applications
+You can use client-side tests to test code that internally uses the RestTemplate. The idea is to declare expected requests and 
+to provide “stub” responses so that you can focus on testing the code in isolation (that is, without running a server).
+ The following example shows how to do so:
+
+RestTemplate restTemplate = new RestTemplate();
+
+MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+mockServer.expect(requestTo("/greeting")).andRespond(withSuccess());
+
+// Test code that uses the above RestTemplate ...
+
+mockServer.verify();
+
+
+
+
+
+Spring Security is a powerful and highly customizable authentication and access-control framework.
+ It is the de-facto standard for securing Spring-based applications.
+
+Spring Security is a framework that focuses on providing both authentication and authorization to Java applications.
+ Like all Spring projects, the real power of Spring Security is found in how easily it can be extended to meet custom requirements
+
+
+Features
+Comprehensive and extensible support for both Authentication and Authorization
+Protection against attacks like session fixation, clickjacking, cross site request forgery, etc
+Servlet API integration
+Optional integration with Spring Web MVC
+
+
+
+
+Spring Security with JWT for REST API
+The Spring Security framework is the de facto industry standard when it comes to securing Spring-based apps, but it can be tricky to configure. In this article, Toptal Software Engineer Ioram Gordadze demonstrates how you can implement it without wasting too much time.
+
+Ioram Gordadze
+AUTHOR
+Ioram Gordadze
+Ioram has a master's degree in computer science and over a decade of professional Java experience. He specializes in enterprise-grade applications.
+0SHARES
+Spring is considered a trusted framework in the Java ecosystem and is widely used. It’s no longer valid to refer to Spring as a framework, as it’s more of an umbrella term that covers various frameworks. One of these frameworks is Spring Security, which is a powerful and customizable authentication and authorization framework. It is considered the de facto standard for securing Spring-based applications.
+
+Despite its popularity, I must admit that when it comes to single-page applications, it’s not simple and straightforward to configure. I suspect the reason is that it started more as an MVC application-oriented framework, where webpage rendering happens on the server-side and communication is session-based.
+
+If the back end is based on Java and Spring, it makes sense to use Spring Security for authentication/authorization and configure it for stateless communication. While there are a lot of articles explaining how this is done, for me, it was still frustrating to set it up for the first time, and I had to read and sum up information from multiple sources. That’s why I decided to write this article, where I will try to summarize and cover all the required subtle details and foibles you may encounter during the configuration process.
+
+Defining Terminology
+Before diving into the technical details, I want to explicitly define the terminology used in the Spring Security context just to be sure that we all speak the same language.
+
+These are the terms we need to address:
+
+Authentication refers to the process of verifying the identity of a user, based on provided credentials. A common example is entering a username and a password when you log in to a website. You can think of it as an answer to the question Who are you?.
+Authorization refers to the process of determining if a user has proper permission to perform a particular action or read particular data, assuming that the user is successfully authenticated. You can think of it as an answer to the question Can a user do/read this?.
+Principle refers to the currently authenticated user.
+Granted authority refers to the permission of the authenticated user.
+Role refers to a group of permissions of the authenticated user.
+Creating a Basic Spring Application
+Before moving to the configuration of the Spring Security framework, let’s create a basic Spring web application. For this, we can use a Spring Initializr and generate a template project. For a simple web application, only a Spring web framework dependency is enough:
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+</dependencies>
+Once we have created the project, we can add a simple REST controller to it as follows:
+
+@RestController @RequestMapping("hello")
+public class HelloRestController {
+
+    @GetMapping("user")
+    public String helloUser() {
+        return "Hello User";
+    }
+
+    @GetMapping("admin")
+    public String helloAdmin() {
+        return "Hello Admin";
+    }
+
+}
+After this, if we build and run the project, we can access the following URLs in the web browser:
+
+http://localhost:8080/hello/user will return the string Hello User.
+http://localhost:8080/hello/admin will return the string Hello Admin.
+Now, we can add the Spring Security framework to our project, and we can do this by adding the following dependency to our pom.xml file:
+
+<dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+</dependencies>
+Adding other Spring framework dependencies doesn’t normally have an immediate effect on an application until we provide the corresponding configuration, but Spring Security is different in that it does have an immediate effect, and this usually confuses new users. After adding it, if we rebuild and run the project and then try to access one of the aforementioned URLs instead of viewing the result, we will be redirected to http://localhost:8080/login. This is default behavior because the Spring Security framework requires authentication out of the box for all URLs.
+
+To pass the authentication, we can use the default username user and find an auto-generated password in our console:
+
+Using generated security password: 1fc15145-dfee-4bec-a009-e32ca21c77ce
+Please remember that the password changes each time we rerun the application. If we want to change this behavior and make the password static, we can add the following configuration to our application.properties file:
+
+spring.security.user.password=Test12345_
+Now, if we enter credentials in the login form, we will be redirected back to our URL and we will see the correct result. Please note that the out-of-the-box authentication process is session-based, and if we want to log out, we can access the following URL: http://localhost:8080/logout
+
+This out-of-the-box behavior may be useful for classic MVC web applications where we have session-based authentication, but in the case of single-page applications, it’s usually not useful because in most use cases, we have client-side rendering and JWT-based stateless authentication. In this case, we will have to heavily customize the Spring Security framework, which we will do in the remainder of the article.
+
+As an example, we will implement a classic bookstore web application and create a back end that will provide CRUD APIs to create authors and books plus APIs for user management and authentication.
+
+Spring Security Architecture Overview
+Before we start customizing the configuration, let’s first discuss how Spring Security authentication works behind the scenes.
+
+The following diagram presents the flow and shows how authentication requests are processed:
+
+Spring Security Architecture
+
+Spring Security Architecture
+Now, let’s break down this diagram into components and discuss each of them separately.
+
+Spring Security Filters Chain
+When you add the Spring Security framework to your application, it automatically registers a filters chain that intercepts all incoming requests. This chain consists of various filters, and each of them handles a particular use case.
+
+For example:
+
+Check if the requested URL is publicly accessible, based on configuration.
+In case of session-based authentication, check if the user is already authenticated in the current session.
+Check if the user is authorized to perform the requested action, and so on.
+One important detail I want to mention is that Spring Security filters are registered with the lowest order and are the first filters invoked. For some use cases, if you want to put your custom filter in front of them, you will need to add padding to their order. This can be done with the following configuration:
+
+spring.security.filter.order=10
+Once we add this configuration to our application.properties file, we will have space for 10 custom filters in front of the Spring Security filters.
+
+AuthenticationManager
+You can think of AuthenticationManager as a coordinator where you can register multiple providers, and based on the request type, it will deliver an authentication request to the correct provider.
+
+AuthenticationProvider
+AuthenticationProvider processes specific types of authentication. Its interface exposes only two functions:
+
+authenticate performs authentication with the request.
+supports checks if this provider supports the indicated authentication type.
+One important implementation of the interface that we are using in our sample project is DaoAuthenticationProvider, which retrieves user details from a UserDetailsService.
+
+UserDetailsService
+UserDetailsService is described as a core interface that loads user-specific data in the Spring documentation.
+
+In most use cases, authentication providers extract user identity information based on credentials from a database and then perform validation. Because this use case is so common, Spring developers decided to extract it as a separate interface, which exposes the single function:
+
+loadUserByUsername accepts username as a parameter and returns the user identity object.
+Authentication Using JWT with Spring Security
+After discussing the internals of the Spring Security framework, let’s configure it for stateless authentication with a JWT token.
+
+To customize Spring Security, we need a configuration class annotated with @EnableWebSecurity annotation in our classpath. Also, to simplify the customization process, the framework exposes a WebSecurityConfigurerAdapter class. We will extend this adapter and override both of its functions so as to:
+
+Configure the authentication manager with the correct provider
+Configure web security (public URLs, private URLs, authorization, etc.)
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // TODO configure authentication manager
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // TODO configure web security
+    }
+
+}
+In our sample application, we store user identities in a MongoDB database, in the users collection. These identities are mapped by the User entity, and their CRUD operations are defined by the UserRepo Spring Data repository.
+
+Now, when we accept the authentication request, we need to retrieve the correct identity from the database using the provided credentials and then verify it. For this, we need the implementation of the UserDetailsService interface, which is defined as follows:
+
+public interface UserDetailsService {
+
+    UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException;
+
+}
+Here, we can see that it is required to return the object that implements the UserDetails interface, and our User entity implements it (for implementation details, please see the sample project’s repository). Considering the fact that it exposes only the single-function prototype, we can treat it as a functional interface and provide implementation as a lambda expression.
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final UserRepo userRepo;
+
+    public SecurityConfig(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(username -> userRepo
+            .findByUsername(username)
+            .orElseThrow(
+                () -> new UsernameNotFoundException(
+                    format("User: %s, not found", username)
+                )
+            ));
+    }
+
+    // Details omitted for brevity
+
+}
+Here, the auth.userDetailsService function call will initiate the DaoAuthenticationProvider instance using our implementation 
+of the UserDetailsService interface and register it in the authentication manager.
+
+Along with the authentication provider, we need to configure an authentication manager with the correct password-encoding schema 
+that will be used for credentials verification. For this, we need to expose the preferred implementation of the PasswordEncoder interface as a bean.
+
+In our sample project, we will use the bcrypt password-hashing algorithm.
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final UserRepo userRepo;
+
+    public SecurityConfig(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(username -> userRepo
+            .findByUsername(username)
+            .orElseThrow(
+                () -> new UsernameNotFoundException(
+                    format("User: %s, not found", username)
+                )
+            ));
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // Details omitted for brevity
+
+}
+Having configured the authentication manager, we now need to configure web security. We are implementing a REST API and 
+need stateless authentication with a JWT token; therefore, we need to set the following options:
+
+Enable CORS and disable CSRF.
+Set session management to stateless.
+Set unauthorized requests exception handler.
+Set permissions on endpoints.
+Add JWT token filter.
+This configuration is implemented as follows:
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final UserRepo userRepo;
+    private final JwtTokenFilter jwtTokenFilter;
+
+    public SecurityConfig(UserRepo userRepo,
+                          JwtTokenFilter jwtTokenFilter) {
+        this.userRepo = userRepo;
+        this.jwtTokenFilter = jwtTokenFilter;
+    }
+
+    // Details omitted for brevity
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Enable CORS and disable CSRF
+        http = http.cors().and().csrf().disable();
+
+        // Set session management to stateless
+        http = http
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and();
+
+        // Set unauthorized requests exception handler
+        http = http
+            .exceptionHandling()
+            .authenticationEntryPoint(
+                (request, response, ex) -> {
+                    response.sendError(
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        ex.getMessage()
+                    );
+                }
+            )
+            .and();
+
+        // Set permissions on endpoints
+        http.authorizeRequests()
+            // Our public endpoints
+            .antMatchers("/api/public/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/author/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/author/search").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/book/search").permitAll()
+            // Our private endpoints
+            .anyRequest().authenticated();
+
+        // Add JWT token filter
+        http.addFilterBefore(
+            jwtTokenFilter,
+            UsernamePasswordAuthenticationFilter.class
+        );
+    }
+
+    // Used by spring security if CORS is enabled.
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source =
+            new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
+}
+Please note that we added the JwtTokenFilter before the Spring Security internal UsernamePasswordAuthenticationFilter. 
+We’re doing this because we need access to the user identity at this point to perform authentication/authorization, and its 
+extraction happens inside the JWT token filter based on the provided JWT token. This is implemented as follows:
+
+@Component
+public class JwtTokenFilter extends OncePerRequestFilter {
+
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserRepo userRepo;
+
+    public JwtTokenFilter(JwtTokenUtil jwtTokenUtil,
+                          UserRepo userRepo) {
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userRepo = userRepo;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain)
+            throws ServletException, IOException {
+        // Get authorization header and validate
+        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (isEmpty(header) || !header.startsWith("Bearer ")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Get jwt token and validate
+        final String token = header.split(" ")[1].trim();
+        if (!jwtTokenUtil.validate(token)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Get user identity and set it on the spring security context
+        UserDetails userDetails = userRepo
+            .findByUsername(jwtTokenUtil.getUsername(token))
+            .orElse(null);
+
+        UsernamePasswordAuthenticationToken
+            authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null,
+                userDetails == null ?
+                    List.of() : userDetails.getAuthorities()
+            );
+
+        authentication.setDetails(
+            new WebAuthenticationDetailsSource().buildDetails(request)
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        chain.doFilter(request, response);
+    }
+
+}
+Before implementing our login API function, we need to take care of one more step - we need access to the authentication manager. 
+By default, it’s not publicly accessible, and we need to explicitly expose it as a bean in our configuration class.
+
+This can be done as follows:
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    // Details omitted for brevity
+
+    @Override @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+}
+And now, we are ready to implement our login API function:
+
+@Api(tags = "Authentication")
+@RestController @RequestMapping(path = "api/public")
+public class AuthApi {
+
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserViewMapper userViewMapper;
+
+    public AuthApi(AuthenticationManager authenticationManager,
+                   JwtTokenUtil jwtTokenUtil,
+                   UserViewMapper userViewMapper) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userViewMapper = userViewMapper;
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<UserView> login(@RequestBody @Valid AuthRequest request) {
+        try {
+            Authentication authenticate = authenticationManager
+                .authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                        request.getUsername(), request.getPassword()
+                    )
+                );
+
+            User user = (User) authenticate.getPrincipal();
+
+            return ResponseEntity.ok()
+                .header(
+                    HttpHeaders.AUTHORIZATION,
+                    jwtTokenUtil.generateAccessToken(user)
+                )
+                .body(userViewMapper.toUserView(user));
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+}
+Here, we verify the provided credentials using the authentication manager, and in case of success, we generate the JWT token 
+and return it as a response header along with the user identity information in the response body.
+
+Authorization with Spring Security
+In the previous section, we set up an authentication process and configured public/private URLs. This may be enough for simple 
+applications, but for most real-world use cases, we always need role-based access policies for our users. In this chapter, 
+we will address this issue and set up a role-based authorization schema using the Spring Security framework.
+
+In our sample application, we have defined the following three roles:
+
+USER_ADMIN allows us to manage application users.
+AUTHOR_ADMIN allows us to manage authors.
+BOOK_ADMIN allows us to manage books.
+Now, we need to apply them to the corresponding URLs:
+
+api/public is publicly accessible.
+api/admin/user can access users with the USER_ADMIN role.
+api/author can access users with the AUTHOR_ADMIN role.
+api/book can access users with the BOOK_ADMIN role.
+The Spring Security framework provides us with two options to set up the authorization schema:
+
+URL-based configuration
+Annotation-based configuration
+First, let’s see how URL-based configuration works. It can be applied to the web security configuration as follows:
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    // Details omitted for brevity
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Enable CORS and disable CSRF
+        http = http.cors().and().csrf().disable();
+
+        // Set session management to stateless
+        http = http
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and();
+
+        // Set unauthorized requests exception handler
+        http = http
+            .exceptionHandling()
+            .authenticationEntryPoint(
+                (request, response, ex) -> {
+                    response.sendError(
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        ex.getMessage()
+                    );
+                }
+            )
+            .and();
+
+        // Set permissions on endpoints
+        http.authorizeRequests()
+            // Our public endpoints
+            .antMatchers("/api/public/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/author/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/author/search").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/book/search").permitAll()
+            // Our private endpoints
+            .antMatchers("/api/admin/user/**").hasRole(Role.USER_ADMIN)
+            .antMatchers("/api/author/**").hasRole(Role.AUTHOR_ADMIN)
+            .antMatchers("/api/book/**").hasRole(Role.BOOK_ADMIN)
+            .anyRequest().authenticated();
+
+        // Add JWT token filter
+        http.addFilterBefore(
+            jwtTokenFilter,
+            UsernamePasswordAuthenticationFilter.class
+        );
+    }
+
+    // Details omitted for brevity
+
+}
+As you can see, this approach is simple and straightforward, but it has one downside. The authorization schema in our
+ application
+ can be complex, and if we define all the rules in a single place, it will become very big, complex, and hard to read.
+ Because of 
+this, I usually prefer to use annotation-based configuration.
+
+The Spring Security framework defines the following annotations for web security:
+
+@PreAuthorize supports Spring Expression Language and is used to provide expression-based access control before executing the 
+method.
+@PostAuthorize supports Spring Expression Language and is used to provide expression-based access control after executing the
+ method (provides the ability to access the method result).
+@PreFilter supports Spring Expression Language and is used to filter the collection or arrays before executing the method based on
+ custom security rules we define.
+@PostFilter supports Spring Expression Language and is used to filter the returned collection or arrays after executing the method
+ based on custom security rules we define (provides the ability to access the method result).
+@Secured doesn’t support Spring Expression Language and is used to specify a list of roles on a method.
+@RolesAllowed doesn’t support Spring Expression Language and is the JSR 250’s equivalent annotation of the @Secured annotation.
+These annotations are disabled by default and can be enabled in our application as follows:
+
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(
+    securedEnabled = true,
+    jsr250Enabled = true,
+    prePostEnabled = true
+)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    // Details omitted for brevity
+
+}
+
+securedEnabled = true enables @Secured annotation.
+jsr250Enabled = true enables @RolesAllowed annotation.
+prePostEnabled = true enables @PreAuthorize, @PostAuthorize, @PreFilter, @PostFilter annotations.
+
+After enabling them, we can enforce role-based access policies on our API endpoints like this:
+
+@Api(tags = "UserAdmin")
+@RestController @RequestMapping(path = "api/admin/user")
+@RolesAllowed(Role.USER_ADMIN)
+public class UserAdminApi {
+
+	// Details omitted for brevity
+
+}
+
+@Api(tags = "Author")
+@RestController @RequestMapping(path = "api/author")
+public class AuthorApi {
+
+	// Details omitted for brevity
+
+	@RolesAllowed(Role.AUTHOR_ADMIN)
+	@PostMapping
+	public void create() { }
+
+	@RolesAllowed(Role.AUTHOR_ADMIN)
+	@PutMapping("{id}")
+	public void edit() { }
+
+	@RolesAllowed(Role.AUTHOR_ADMIN)
+	@DeleteMapping("{id}")
+	public void delete() { }
+
+	@GetMapping("{id}")
+	public void get() { }
+
+	@GetMapping("{id}/book")
+	public void getBooks() { }
+
+	@PostMapping("search")
+	public void search() { }
+
+}
+
+@Api(tags = "Book")
+@RestController @RequestMapping(path = "api/book")
+public class BookApi {
+
+	// Details omitted for brevity
+
+	@RolesAllowed(Role.BOOK_ADMIN)
+	@PostMapping
+	public BookView create() { }
+
+	@RolesAllowed(Role.BOOK_ADMIN)
+	@PutMapping("{id}")
+	public void edit() { }
+
+	@RolesAllowed(Role.BOOK_ADMIN)
+	@DeleteMapping("{id}")
+	public void delete() { }
+
+	@GetMapping("{id}")
+	public void get() { }
+
+	@GetMapping("{id}/author")
+	public void getAuthors() { }
+
+	@PostMapping("search")
+	public void search() { }
+
+}
+Please note that security annotations can be provided both on the class level and the method level.
+
+The demonstrated examples are simple and do not represent real-world scenarios, but Spring Security provides a rich set of
+ annotations, and you can handle a complex authorization schema if you choose to use them.
+
+Role Name Default Prefix
+In this separate subsection, I want to emphasize one more subtle detail that confuses a lot of new users.
+
+The Spring Security framework differentiates two terms:
+
+Authority represents an individual permission.
+Role represents a group of permissions.
+Both can be represented with a single interface called GrantedAuthority and later checked with Spring Expression Language inside
+ the Spring Security annotations as follows:
+
+Authority: @PreAuthorize(“hasAuthority(‘EDIT_BOOK’)”)
+Role: @PreAuthorize(“hasRole(‘BOOK_ADMIN’)”)
+To make the difference between these two terms more explicit, the Spring Security framework adds a ROLE_ prefix to the role name 
+by default. So, instead of checking for a role named BOOK_ADMIN, it will check for ROLE_BOOK_ADMIN.
+
+Personally, I find this behavior confusing and prefer to disable it in my applications. It can be disabled inside the Spring
+ Security configuration as follows:
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    // Details omitted for brevity
+
+    @Bean
+    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
+    }
+
+}
+Testing with Spring Security
+To test our endpoints with unit or integration tests when using the Spring Security framework, we need to add spring-security-test
+ dependency along with the spring-boot-starter-test. Our pom.xml build file will look like this:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+    <exclusions>
+        <exclusion>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-test</artifactId>
+    <scope>test</scope>
+</dependency>
+This dependency gives us access to some annotations that can be used to add security context to our test functions.
+
+These annotations are:
+
+@WithMockUser can be added to a test method to emulate running with a mocked user.
+@WithUserDetails can be added to a test method to emulate running with UserDetails returned from the UserDetailsService.
+@WithAnonymousUser can be added to a test method to emulate running with an anonymous user. This is useful when a user wants to 
+run a majority of tests as a specific user and override a few methods to be anonymous.
+@WithSecurityContext determines what SecurityContext to use, and all three annotations described above are based on it.
+ If we have
+ a specific use case, we can create our own annotation that uses @WithSecurityContext to create any SecurityContext we want. Its 
+discussion is outside the scope of our article, and please refer to the Spring Security documentation for further details.
+The easiest way to run the tests with a specific user is to use the @WithMockUser annotation. We can create a mock user with it 
+and run the test as follows:
+
+@Test @WithMockUser(username="customUsername@example.io", roles={"USER_ADMIN"})
+public void test() {
+	// Details omitted for brevity
+}
+This approach has a couple of drawbacks, though. First, the mock user doesn’t exist, and if you run the integration test, which
+ later queries the user information from the database, the test will fail. Second, the mock user is the instance of the 
+org.springframework.security.core.userdetails.User class, which is the Spring framework’s internal implementation of the 
+UserDetails interface, and if we have our own implementation, this can cause conflicts later, during test execution.
+
+If previous drawbacks are blockers for our application, then the @WithUserDetails annotation is the way to go. It is used when
+ we have custom UserDetails and UserDetailsService implementations. It assumes that the user exists, so we have to either create 
+the actual row in the database or provide the UserDetailsService mock instance before running tests.
+
+This is how we can use this annotation:
+
+@Test @WithUserDetails("customUsername@example.io")
+public void test() {
+	// Details omitted for brevity
+}
+This is a preferred annotation in our sample project’s integration tests because we have custom implementations of the aforementioned interfaces.
+
+Using @WithAnonymousUser allows running as an anonymous user. This is especially convenient when you wish to run most tests 
+with a specific user but a few tests as an anonymous user. For example, the following will run test1 and test2 test cases with 
+a mock user and test3 with an anonymous user:
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@WithMockUser
+public class WithUserClassLevelAuthenticationTests {
+
+    @Test
+    public void test1() {
+        // Details omitted for brevity
+    }
+
+    @Test
+    public void test2() {
+        // Details omitted for brevity
+    }
+
+    @Test @WithAnonymousUser
+    public void test3() throws Exception {
+        // Details omitted for brevity
+    }
+}
 
 
 
