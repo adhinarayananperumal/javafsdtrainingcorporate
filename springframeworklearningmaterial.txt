@@ -311,6 +311,7 @@ HandlerAdapter	Helps the DispatcherServlet to invoke a handler mapped to a reque
 For example, invoking an annotated controller requires resolving various annotations. Thus the main purpose of a HandlerAdapter 
 is to shield the DispatcherServlet from such details.
 
+------------ related to spring MVC and JSP Begin-----------------
 
 ViewResolver	Resolves logical String-based view names to actual View types.
 
@@ -339,6 +340,9 @@ If a model is returned, the view is rendered. If no model is returned, (may be d
 
 Handler exception resolvers that are declared in the WebApplicationContext pick up exceptions that are thrown during processing 
 of the request. Using these exception resolvers allows you to define custom behaviors to address exceptions.
+
+------------ related to spring MVC and JSP end-----------------
+
 
 The Spring DispatcherServlet also supports the return of the last-modification-date, as specified by the Servlet API. 
 The process of determining the last modification date for a specific request is straightforward: the DispatcherServlet looks up 
@@ -764,26 +768,39 @@ The Spring Security framework is the de facto industry standard when it comes to
 Ioram Gordadze
 AUTHOR
 Ioram Gordadze
-Ioram has a master's degree in computer science and over a decade of professional Java experience. He specializes in enterprise-grade applications.
+Ioram has a master's degree in computer science and over a decade of professional Java experience. He specializes in 
+enterprise-grade applications.
 0SHARES
-Spring is considered a trusted framework in the Java ecosystem and is widely used. It’s no longer valid to refer to Spring as a framework, as it’s more of an umbrella term that covers various frameworks. One of these frameworks is Spring Security, which is a powerful and customizable authentication and authorization framework. It is considered the de facto standard for securing Spring-based applications.
+Spring is considered a trusted framework in the Java ecosystem and is widely used. It’s no longer valid to refer to Spring as a
+ framework, as it’s more of an umbrella term that covers various frameworks. One of these frameworks is Spring Security, which is 
+a powerful and customizable authentication and authorization framework. It is considered the de facto standard for securing 
+Spring-based applications.
 
-Despite its popularity, I must admit that when it comes to single-page applications, it’s not simple and straightforward to configure. I suspect the reason is that it started more as an MVC application-oriented framework, where webpage rendering happens on the server-side and communication is session-based.
+Despite its popularity, I must admit that when it comes to single-page applications, it’s not simple and straightforward to 
+configure. I suspect the reason is that it started more as an MVC application-oriented framework, where webpage rendering happens 
+on the server-side and communication is session-based.
 
-If the back end is based on Java and Spring, it makes sense to use Spring Security for authentication/authorization and configure it for stateless communication. While there are a lot of articles explaining how this is done, for me, it was still frustrating to set it up for the first time, and I had to read and sum up information from multiple sources. That’s why I decided to write this article, where I will try to summarize and cover all the required subtle details and foibles you may encounter during the configuration process.
+If the back end is based on Java and Spring, it makes sense to use Spring Security for authentication/authorization and configure 
+it for stateless communication. While there are a lot of articles explaining how this is done, for me, it was still frustrating to
+ set it up for the first time, and I had to read and sum up information from multiple sources. That’s why I decided to write this article, where I will try to summarize and cover all the required subtle details and foibles you may encounter during the configuration process.
 
 Defining Terminology
-Before diving into the technical details, I want to explicitly define the terminology used in the Spring Security context just to be sure that we all speak the same language.
+Before diving into the technical details, I want to explicitly define the terminology used in the Spring Security context just to 
+be sure that we all speak the same language.
 
 These are the terms we need to address:
 
-Authentication refers to the process of verifying the identity of a user, based on provided credentials. A common example is entering a username and a password when you log in to a website. You can think of it as an answer to the question Who are you?.
-Authorization refers to the process of determining if a user has proper permission to perform a particular action or read particular data, assuming that the user is successfully authenticated. You can think of it as an answer to the question Can a user do/read this?.
+Authentication refers to the process of verifying the identity of a user, based on provided credentials. A common example is 
+entering a username and a password when you log in to a website. You can think of it as an answer to the question Who are you?.
+Authorization refers to the process of determining if a user has proper permission to perform a particular action or read particular 
+data, assuming that the user is successfully authenticated. You can think of it as an answer to the question Can a user do/read this?.
 Principle refers to the currently authenticated user.
 Granted authority refers to the permission of the authenticated user.
 Role refers to a group of permissions of the authenticated user.
 Creating a Basic Spring Application
-Before moving to the configuration of the Spring Security framework, let’s create a basic Spring web application. For this, we can use a Spring Initializr and generate a template project. For a simple web application, only a Spring web framework dependency is enough:
+Before moving to the configuration of the Spring Security framework, let’s create a basic Spring web application. For this, we
+ can use a Spring Initializr and generate a template project. For a simple web application, only a Spring web framework dependency 
+is enough:
 
 <dependencies>
     <dependency>
@@ -819,17 +836,22 @@ Now, we can add the Spring Security framework to our project, and we can do this
       <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
 </dependencies>
-Adding other Spring framework dependencies doesn’t normally have an immediate effect on an application until we provide the corresponding configuration, but Spring Security is different in that it does have an immediate effect, and this usually confuses new users. After adding it, if we rebuild and run the project and then try to access one of the aforementioned URLs instead of viewing the result, we will be redirected to http://localhost:8080/login. This is default behavior because the Spring Security framework requires authentication out of the box for all URLs.
+Adding other Spring framework dependencies doesn’t normally have an immediate effect on an application until we provide the 
+corresponding configuration, but Spring Security is different in that it does have an immediate effect, and this usually confuses
+ new users. After adding it, if we rebuild and run the project and then try to access one of the aforementioned URLs instead of
+ viewing the result, we will be redirected to http://localhost:8080/login. This is default behavior because the Spring Security framework requires authentication out of the box for all URLs.
 
 To pass the authentication, we can use the default username user and find an auto-generated password in our console:
 
 Using generated security password: 1fc15145-dfee-4bec-a009-e32ca21c77ce
-Please remember that the password changes each time we rerun the application. If we want to change this behavior and make the password static, we can add the following configuration to our application.properties file:
+Please remember that the password changes each time we rerun the application. If we want to change this behavior and make the
+ password static, we can add the following configuration to our application.properties file:
 
 spring.security.user.password=Test12345_
 Now, if we enter credentials in the login form, we will be redirected back to our URL and we will see the correct result. Please note that the out-of-the-box authentication process is session-based, and if we want to log out, we can access the following URL: http://localhost:8080/logout
 
-This out-of-the-box behavior may be useful for classic MVC web applications where we have session-based authentication, but in the case of single-page applications, it’s usually not useful because in most use cases, we have client-side rendering and JWT-based stateless authentication. In this case, we will have to heavily customize the Spring Security framework, which we will do in the remainder of the article.
+This out-of-the-box behavior may be useful for classic MVC web applications where we have session-based authentication, but 
+in the case of single-page applications, it’s usually not useful because in most use cases, we have client-side rendering and JWT-based stateless authentication. In this case, we will have to heavily customize the Spring Security framework, which we will do in the remainder of the article.
 
 As an example, we will implement a classic bookstore web application and create a back end that will provide CRUD APIs to create authors and books plus APIs for user management and authentication.
 

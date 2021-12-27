@@ -1,0 +1,16 @@
+
+let
+constant
+var
+array
+object -  literal , new
+es5 , es6  etc
+function
+===  meaning 
+undefined
+javascript OOPS   - Object   -- https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Object-oriented_JS
+destructuring  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+rest operator
+spread operator
+promise
+Async wait
