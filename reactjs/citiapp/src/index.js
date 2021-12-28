@@ -1,12 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import FirstPage from './firstPage';
+import App from './App';
+import LoginPage from './login.js';
+import LandingPage from './landingPage.js';
+
+ 
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <FirstPage />
+    <LandingPage />
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -15,21 +15,24 @@ spread operator
 promise
 Async wait
 
-
+Ajax
 Single page application
 DOM - When a web page is loaded, the browser creates a Document Object Model of the page.
+react virtual dom
 jsx
 Create react application
 application flow
 Functional component
 Class component
 class component life cycle
-props state
 Routing
+props 
+state
 Form
-Hook
+controlled component vs un controlled dom
+Hook -- https://www.cloudsavvyit.com/10021/how-to-use-state-in-functional-react-components/
 Axios api call
-CRUD
+CRUD -- https://www.javaguides.net/2021/07/react-js-react-hooks-spring-boot.html
 Lifting state up
 HOC
 Redux
