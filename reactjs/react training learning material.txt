@@ -180,7 +180,7 @@ State
 State represents the value of a dynamic properties of a React component at a given instance. 
 React provides a dynamic data store for each component. The internal data represents the state of a React component 
 and can be accessed using this.state member variable of the component. Whenever the state of the component is changed, 
-the component will re-render itself by calling the render() method along with the new state.
+the component will re-render itself by calling the render/return method along with the new state.
 
 
 A simple example to better understand the state management is to analyse a real-time clock component. 
