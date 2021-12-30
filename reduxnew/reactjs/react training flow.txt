@@ -1,0 +1,49 @@
+
+let
+constant
+var
+array
+object -  literal , new
+es5 , es6  etc
+function
+===  meaning 
+undefined
+javascript OOPS   - Object   -- https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Object-oriented_JS
+destructuring  - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+rest operator
+spread operator
+promise
+Async wait
+
+Ajax
+Single page application
+DOM - When a web page is loaded, the browser creates a Document Object Model of the page.
+react virtual dom
+jsx
+Create react application
+application flow
+Functional component
+Class component
+class component life cycle
+Routing
+props 
+state
+Form
+controlled component vs uncontrolled dom
+Hook -- https://www.cloudsavvyit.com/10021/how-to-use-state-in-functional-react-components/
+Axios api call
+CRUD -- https://www.javaguides.net/2021/07/react-js-react-hooks-spring-boot.html
+Lifting state up
+HOC
+Redux
+
+
+
+
+https://reactjs.org/docs/create-a-new-react-app.html
+
+install node js
+install npm -  like maven 
+
+Creat react application
+>  npx create-react-app iciciibanking

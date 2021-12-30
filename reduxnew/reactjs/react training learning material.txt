@@ -1,0 +1,323 @@
+
+React is an open source, JavaScript library for developing user interface (UI) in web application 
+also ReactJS is a simple, feature rich, component based JavaScript UI library.
+
+JSX
+Consider this variable declaration:
+const element = <h1>Hello, world!</h1>;
+This funny tag syntax is neither a string nor HTML.
+
+It is called JSX, and it is a syntax extension to JavaScript. 
+We recommend using it with React to describe what the UI should look like. 
+JSX may remind you of a template language, but it comes with the full power of JavaScript.
+
+JSX produces React “elements”. We will explore rendering them to the DOM in the next section. 
+Below, you can find the basics of JSX necessary to get you started.
+
+const name = 'Josh Perez';
+const element = <h1>Hello, {name}</h1>;
+
+
+function formatName(user) {
+  return user.firstName + ' ' + user.lastName;
+}
+
+const user = {
+  firstName: 'Harper',
+  lastName: 'Perez'
+};
+
+const element = (
+  <h1>
+    Hello, {formatName(user)}!
+  </h1>
+);
+
+
+function LoginPage() {
+
+    return (
+        <div>
+            <Product></Product>
+            <label>Customer Name</label>
+            <input></input>
+            <CustomerRegistration></CustomerRegistration>
+        </div>
+    )
+}
+
+
+Components let you split the UI into independent, reusable pieces, and think about each piece in isolation. 
+React component is the building block of a React application. Let us learn how to create a new React component and the 
+features of React components in this chapter.
+
+A React component represents a small chunk of user interface in a webpage. 
+The primary job of a React component is to render its user interface and update it whenever its internal state is changed.
+In addition to rendering the UI, it manages the events 
+
+Function and Class Components
+
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+
+class Welcome extends React.Component {
+  render() {
+    return <h1>Hello, {this.props.name}</h1>;
+  }
+}
+
+
+Router
+React Router does client-side routing, allows us to build a single-page web application with navigation , without the page 
+refreshing as the user navigates. React Router call components which display the appropriate information.
+
+React Router is a standard library for routing in React. It enables the navigation among views(components)
+in a React Application, allows changing the browser URL
+
+import React from "react";
+import Hookstate from "./hookstate.js";
+
+import {
+    BrowserRouter as Router,
+    Route,
+    Routes,
+    Link
+} from "react-router-dom";
+
+import LoginPage from './loginPage.js';
+import LogOutPage from './logOutPage.js';
+import DefaultPage from './defaultPage.js';
+
+
+function LandingPage() {
+
+    return (
+        <Router>
+            <div>
+                <p><Hookstate></Hookstate></p>
+                <ul>
+                    <li>
+                        <Link to="/">Default</Link>
+                    </li>
+                    <li>
+                        <Link to="/login">Login</Link>
+                    </li>
+                    <li>
+                        <Link to="/logout">Logout</Link>
+                    </li>
+                </ul>
+
+                <hr />
+
+
+                <Routes>
+                    <Route exact path="/" element={<DefaultPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/logout" element={<LogOutPage />} />
+                </Routes>
+            </div>
+        </Router>
+    );
+}
+
+export default LandingPage;
+
+
+
+
+Props
+React allows us to pass information to a Component using something called props (stands for properties). 
+Props are arguments passed into React components.
+Props are passed to components via HTML attributes.
+props stands for properties.
+
+props can change but they should be immutable
+
+Pass Data
+Props are also how you pass data from one component to another, as parameters.
+
+
+
+function Welcome(props) {
+  return <h1>Hello, {props.name}</h1>;
+}
+
+function App() {
+  return (
+    <div>
+      <Welcome name="Sara" />
+      <Welcome name="Cahal" />
+      <Welcome name="Edite" />
+    </div>
+  );
+}
+
+
+function Comment(props) {
+  return (
+    <div className="Comment">
+      <div className="UserInfo">
+        <img className="Avatar"
+          src={props.author.avatarUrl}
+          alt={props.author.name}
+        />
+        <div className="UserInfo-name">
+          {props.author.name}
+        </div>
+      </div>
+      <div className="Comment-text">
+        {props.text}
+      </div>
+      <div className="Comment-date">
+        {formatDate(props.date)}
+      </div>
+    </div>
+  );
+}
+
+State
+State represents the value of a dynamic properties of a React component at a given instance. 
+React provides a dynamic data store for each component. The internal data represents the state of a React component 
+and can be accessed using this.state member variable of the component. Whenever the state of the component is changed, 
+the component will re-render itself by calling the render/return method along with the new state.
+
+
+A simple example to better understand the state management is to analyse a real-time clock component. 
+The clock component primary job is to show the date and time of a location at the given instance. 
+As the current time will change every second, the clock component should maintain the current date and time in it’s state.
+ As the state of the clock component changes every second, the clock’s render() method will be called every second and the 
+component show the current time using it’s current state.
+
+
+
+
+
+State vs props
+For parent-child communication, simply pass props.
+Use state to store the data your current page needs in your controller-view.
+Use props to pass data & event handlers down to your child components.
+These lists should help guide you when working with data in your components.
+
+Props
+
+are immutable
+which lets React do fast reference checks
+are used to pass data down from your view-controller
+your top level component
+have better performance
+use this to pass data to child components
+State
+
+should be managed in your view-controller
+your top level component
+is mutable
+has worse performance
+should not be accessed from child components
+pass it down with props instead
+
+
+Form
+The nature of form programming needs the state to be maintained. Because, the input field information will get changed as the user
+ interacts with the form. But as we learned earlier, React library does not store or maintain any state information by itself and 
+component has to use state management api to manage state. Considering this, React provides two types of components to support 
+form programming.
+
+Controlled component − In controlled component, React provides a special attribute, value for all input elements and controls 
+the input elements. The value attribute can be used to get and set the value of the input element. It has to be in sync with 
+state of the component.
+
+Uncontrolled component − In uncontrolled component, React provides minimal support for form programming. 
+It has to use Ref concept (another react concept to get a DOM element in the React component during runtime) to do the
+ form programming.
+
+Form example
+import { useState } from "react";
+import ReactDOM from 'react-dom';
+
+
+import SimpleCusForm from "./simplecusform.js";
+import StateExample from "./stateExample.js";
+import CustomerService from "./customerService.js";
+import { useNavigate } from 'react-router-dom';
+
+
+function DefaultPage() {
+    let navigate = useNavigate();
+    const [customerName, setName] = useState("Incedo");
+    const [age, setAge] = useState("0");
+
+
+    function registerNewCustomer() {
+        alert("Form Submission successfull....."+ customerName + "-----" + age);
+        let status = CustomerService.saveCustomer({customerName,age});
+        alert(status);
+        navigate('/login');
+    }
+
+
+    return (
+        <div>
+      
+      <p> Customer Name: {customerName}  </p>
+      <p> Age: {age}  </p>
+
+
+
+            <h1> Welcome to Citi i banking portal </h1>
+
+            <h3> Customer registration Form</h3>
+
+            <form>
+                <label>Enter your Customer Name:
+                    <input
+                        type="text"
+                        value={customerName}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                </label>
+
+                <br></br>
+                <label>Enter your age:
+                    <input
+                        type="text"
+                        value={age}
+                        onChange={(e) => setAge(e.target.value)}
+                    />
+                </label>
+                <br></br>
+                <input type='button' onClick={registerNewCustomer} value="Register Customer" />
+
+            </form>
+
+
+        </div>
+    );
+}
+
+export default DefaultPage;
+
+
+
+Http Client API
+Http client programming enables the application to connect and fetch data from http server through JavaScript. 
+It reduces the data transfer between client and server as it fetches only the required data instead of the whole design 
+and subsequently improves the network speed. It improves the user experience and becomes an indispensable feature of every 
+modern web application.
+
+Nowadays, lot of server side application exposes its functionality through REST API (functionality over HTTP protocol) and 
+allows any client application to consume the functionality.
+
+React does not provide it’s own http programming api but it supports browser’s built-in fetch() api as well as third party
+client library like axios to do client side programming. Let us learn how to do http programming in React application in 
+this chapter. Developer should have a basic knowledge in Http programming to understand this chapter.
+
+
+HOC
+A higher-order component (HOC) is an advanced technique in React for reusing component logic. 
+HOCs are not part of the React API, per se. They are a pattern that emerges from React's compositional nature. 
+Concretely, a higher-order component is a function that takes a component and returns a new component.
+
+
+
+
