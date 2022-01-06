@@ -1,0 +1,45 @@
+Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your infrastructure so you 
+can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for 
+shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.
+
+Sample docker file for view layer application react
+
+FROM node:13.12.0-alpine
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install --silent
+RUN npm install react-scripts@5.0.0 -g --silent
+# add app
+COPY . ./
+# start app
+CMD ["npm", "start"]
+
+Sample docker file for spring boot application
+
+FROM openjdk:11
+ADD target/dima.jar dima.jar
+EXPOSE 8933
+ENTRYPOINT ["java" , "-jar", "dima.jar"]
+
+Images
+An image is a read-only template with instructions for creating a Docker container. Often, an image is based on another image, 
+with some additional customization. 
+You might create your own images or you might only use those created by others and published in a registry. 
+To build your own image, you create a Dockerfile 
+
+docker build -f Dockerfile -t dbs .
+
+Containers
+A container is a runnable instance of an image. You can create, start, stop, move, or delete a container using the Docker API or CLI. 
+By default, a container is relatively well isolated from other containers and its host machine.
+A container is defined by its image as well as any configuration options you provide to it when you create or start it. When a container is removed, 
+any changes to its state that are not stored in persistent storage disappear.
+
+C:\javatrainingfsd\reactreduxapp>docker run -p 3000:3000 uadhi/rrexp
+
+Docker Hub is a registry service on the cloud that allows you to download Docker images that are built by other communities. You can also upload your 
+own Docker built images to Docker hub.
+
+docker pull [OPTIONS] NAME[:TAG|@DIGEST]
+
+ docker push [OPTIONS] NAME[:TAG]

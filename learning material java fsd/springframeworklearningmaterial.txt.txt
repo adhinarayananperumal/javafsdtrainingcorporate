@@ -1,0 +1,1512 @@
+
+IOC ( loosely coupled , dependency injection(setter injection , constructor injection))
+AOP
+Spring MVC REST
+Spring boot
+Spring data JPA Repository ( pre requisite - hibernate jpa)
+Spring microservices - Eureka server,circuit breaker,feign,APIGateway,cloud config,jwt
+
+
+ioc container
+loosely coupled
+dependency injection
+component scan - 4 annotations
+@Autowired
+
+
+
+The Spring Framework (Spring) is an open-source application framework that provides infrastructure support for 
+developing Java applications. One of the most popular Java Enterprise Edition (Java EE) frameworks, Spring helps 
+developers create high performing applications using plain old Java objects (POJOs).  
+
+A framework is a large body of predefined code to which developers can add code to solve a problem in a specific 
+domain. There are many popular Java frameworks including Java Server Faces (JSF), Maven, Hibernate, Struts, and Spring.
+
+Spring removes tedious configuration work so that developers can focus on writing business logic.
+
+Some of the most important features of the Spring framework are as follows:
+
+IoC container
+AOP
+Data Access Framework - Spring DAO - JDBC abstraction layer
+Spring MVC
+Transaction Management
+Spring Web Services
+Spring TestContext framework
+
+
+https://searchapparchitecture.techtarget.com/definition/Spring-Framework
+
+IOC
+	Spring IoC Container is the core of Spring Framework. It creates the objects, configures and assembles their dependencies, 
+manages their entire life cycle. 
+
+The advantages of this architecture are:
+	1. Making it easier to switch between different implementations
+	2.greater ease in testing a program by isolating a component or mocking its dependencies, and allowing components
+	 to communicate through contracts
+
+
+
+
+Dependency injection:
+
+Spring’s core logic is dependency injection. Dependency injection is a programming pattern that allows developers 
+to build more decoupled architectures. 
+
+Dependency injection means that Spring understands the different Java annotations 
+that a developer puts on top of classes. Spring knows that the developer wants to create an instance of a class and that 
+Spring should manage it. 
+
+Spring also understands the dependency and makes sure that all instances created have properly  populated dependencies.
+For the Spring Framework to instantiate objects and populate the dependencies, a programmer 
+simply tells Spring which objects to manage and what the dependencies are for each class.
+
+
+
+
+
+IOC Containers
+The org.springframework.beans and org.springframework.context packages are the basis for Spring Framework's IoC container.
+ 
+The BeanFactory interface provides an advanced configuration mechanism capable of managing any type of object.
+
+ ApplicationContext is a sub-interface of BeanFactory.
+ It adds easier integration with Spring's AOP features; message resource handling (for use in internationalization), event 
+publication; and application-layer specific contexts such as the WebApplicationContext for use in web applications.
+
+In short, the BeanFactory provides the configuration framework and basic functionality, and the ApplicationContext adds more
+ enterprise-specific functionality. The ApplicationContext is a complete superset of the BeanFactory, and is used exclusively 
+in this chapter in descriptions of Spring's IoC container.
+
+Several implementations of the ApplicationContext interface are supplied out-of-the-box with Spring.
+ In standalone applications it is common to create an instance of ClassPathXmlApplicationContext or 
+FileSystemXmlApplicationContext. 
+
+
+
+Sample's of Configuration bean in configuration file
+1. XML Based
+2. Java-based configuration
+
+servicedao.xml
+  <bean id="petStore"
+        class="org.springframework.samples.jpetstore.services.PetStoreServiceImpl">
+    <property name="accountDao" ref="accountDao"/>
+    <property name="itemDao" ref="itemDao"/>
+    <!-- additional collaborators and configuration for this bean go here -->
+  </bean>
+
+  <bean id="accountDao"
+      class="org.springframework.samples.jpetstore.dao.ibatis.SqlMapAccountDao">
+    <!-- additional collaborators and configuration for this bean go here -->
+  </bean>
+
+  <bean id="itemDao" class="org.springframework.samples.jpetstore.dao.ibatis.SqlMapItemDao">
+    <!-- additional collaborators and configuration for this bean go here -->
+  </bean>
+
+-------------------
+
+import org.springframework.context.annotation.*;
+
+@Configuration
+public class HelloWorldConfig {
+   @Bean 
+   public HelloWorld helloWorld(){
+      return new HelloWorld();
+   }
+
+@Bean 
+   public HelloWorld customerService(){
+      return new CustomerServiceImpl();
+   }
+}
+The above code will be equivalent to the following XML configuration −
+
+<beans>
+   <bean id = "helloWorld" class = "com.tutorialspoint.HelloWorld" />
+</beans>
+
+<beans>
+   <bean id = "customerService" class = "com.tutorialspoint.CustomerServiceImpl" />
+</beans>
+
+
+public static void main(String[] args) {
+   ApplicationContext ctx = new AnnotationConfigApplicationContext(HelloWorldConfig.class);
+   
+   HelloWorld helloWorld = ctx.getBean(HelloWorld.class);
+   helloWorld.setMessage("Hello World!");
+   helloWorld.getMessage();
+}
+You can load various configuration classes as follows −
+
+public static void main(String[] args) {
+   AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+
+   ctx.register(AppConfig.class, OtherConfig.class);
+   ctx.register(AdditionalConfig.class);
+   ctx.refresh();
+
+
+
+-----------------------------------------------------------------------
+
+ApplicationContext context =
+    new ClassPathXmlApplicationContext(new String[] {"services.xml", "daos.xml"});
+
+// retrieve configured instance
+PetStoreServiceImpl service = context.getBean("petStore", PetStoreServiceImpl.class);
+
+// use configured instance
+List userList = service.getUsernameList();
+
+
+Using @ComponentScan in a Spring Application
+With Spring, we use the @ComponentScan annotation along with the @Configuration annotation to specify the packages 
+that we want to be scanned. @ComponentScan without arguments tells Spring to scan the current package and all of its sub-packages.
+
+
+
+
+@Configuration
+@ComponentScan(basePackages = "com.bankad.service")
+public class SpringComponentScanApp {
+    private static ApplicationContext applicationContext;
+
+    @Bean
+    public ExampleBean exampleBean() {
+        return new ExampleBean();
+    }
+
+    public static void main(String[] args) {
+        applicationContext = 
+          new AnnotationConfigApplicationContext(SpringComponentScanApp.class);
+
+        for (String beanName : applicationContext.getBeanDefinitionNames()) {
+            System.out.println(beanName);
+        }
+    }
+}
+
+
+
+Spring @Configuration annotation is part of the spring core framework. Spring Configuration annotation indicates that the
+class has @Bean definition methods. So Spring container can process the class and generate Spring Beans to be used in the application.
+Spring container to generate bean definitions and service requests for those beans at runtime
+
+Stereotype annotations
+With @Component, @Repository, @Service and @Controller annotations in place and automatic component scanning enabled, 
+Spring will automatically import the beans into the container and inject to dependencies. 
+These annotations are called Stereotype annotations as well.
+
+
+1.2. @Repository annotation
+Although above use of @Component is good enough but we can use more suitable annotation that provides additional benefits
+ specifically for DAOs i.e. @Repository annotation. The @Repository annotation is a specialization of the @Component annotation 
+with similar use and functionality. In addition to importing the DAOs into the DI container, it also makes the unchecked exceptions (thrown from DAO methods) eligible for translation into Spring DataAccessException.
+
+1.3. @Service annotation
+The @Service annotation is also a specialization of the component annotation. It doesn’t currently provide any additional 
+behavior over the @Component annotation, but it’s a good idea to use @Service over @Component in service-layer classes 
+because it specifies intent better. Additionally, tool support and additional behavior might rely on it in the future.
+
+1.4. @Controller annotation
+@Controller annotation marks a class as a Spring Web MVC controller. It too is a @Component specialization, so beans marked 
+with it are automatically imported into the DI container. When we add the @Controller annotation to a class, we can use another 
+annotation i.e. @RequestMapping; to map URLs to instance methods of a class.
+
+ @Component should be used when the class does not fall into either of three categories i.e. controller, serviceand dao.
+
+@Configuration,
+@EnableAutoConfiguration,
+@ComponentScan.
+After enabling annotation injection, we can use autowiring on properties, setters, and constructors.
+
+Bean Scope
+The scope of a bean defines the life cycle and visibility of that bean in the contexts we use it.
+The latest version of the Spring framework defines 6 types of scopes:
+singleton
+prototype
+request
+session
+application
+websocket
+The last four scopes mentioned, request, session, application and websocket, are only available in a web-aware application.
+
+2. Singleton Scope
+When we define a bean with the singleton scope, the container creates a single instance of that bean; all requests for that bean name will return the same object, which is cached. Any modifications to the object will be reflected in all references to the bean. This scope is the default value if no other scope is specified.
+
+
+Let's create a Person entity to exemplify the concept of scopes:
+
+public class Person {
+    private String name;
+
+    // standard constructor, getters and setters
+}
+Afterwards, we define the bean with the singleton scope by using the @Scope annotation:
+
+@Bean
+@Scope("singleton")
+public Person personSingleton() {
+    return new Person();
+}
+
+Prototype Scope
+A bean with the prototype scope will return a different instance every time it is requested from the container. It is defined by setting the value prototype to the @Scope annotation in the bean definition:
+
+@Bean
+@Scope("prototype")
+public Person personPrototype() {
+    return new Person();
+}
+We can also use a constant like we did for the singleton scope:
+
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+
+Enabling @Autowired Annotations
+The Spring framework enables automatic dependency injection. In other words, by declaring all the bean dependencies in a 
+Spring configuration file, Spring container can autowire relationships between collaborating beans. This is called Spring 
+bean autowiring.
+
+
+
+Web MVC framework
+Introduction to Spring Web MVC framework
+The Spring Web model-view-controller (MVC) framework is designed around a DispatcherServlet that dispatches requests to handlers,
+ with configurable handler mappings, view resolution, locale and theme resolution as well as support for uploading files. 
+The default handler is based on the @Controller and @RequestMapping annotations, offering a wide range of flexible handling methods.
+ With the introduction of Spring 3.0, the @Controller mechanism also allows you to create RESTful Web sites and applications,
+ through the @PathVariable annotation and other features.
+
+
+
+DispatcherServlet
+Spring's web MVC framework is, like many other web MVC frameworks, request-driven, designed around a central Servlet that 
+dispatches requests to controllers and offers other functionality that facilitates the development of web applications. 
+Spring's DispatcherServlet however, does more than just that. It is completely integrated with the 
+Spring IoC container and as such allows you to use every other feature that Spring has.
+
+<web-app>
+
+    <servlet>
+        <servlet-name>example</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>example</servlet-name>
+        <url-pattern>/example/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+
+
+In a Servlet 3.0+ environment, you also have the option of configuring the Servlet container programmatically. 
+Below is the code based equivalent of the above web.xml example:
+
+public class MyWebApplicationInitializer implements WebApplicationInitializer {
+
+    @Override
+    public void onStartup(ServletContext container) {
+        ServletRegistration.Dynamic registration = container.addServlet("dispatcher", new DispatcherServlet());
+        registration.setLoadOnStartup(1);
+        registration.addMapping("/example/*");
+    }
+
+}
+
+WebApplicationInitializer is an interface provided by Spring MVC that ensures your code-based configuration is detected and 
+automatically used to initialize any Servlet 3 container. 
+An abstract base class implementation of this interace named AbstractDispatcherServletInitializer makes it even easier to 
+register the DispatcherServlet by simply specifying its servlet mapping. 
+
+The above is only the first step in setting up Spring Web MVC. You now need to configure the various beans used by the 
+Spring Web MVC framework (over and above the DispatcherServlet itself).
+
+HandlerMapping	Maps incoming requests to handlers and a list of pre- and post-processors (handler interceptors)
+ based on some criteria the details of which vary by HandlerMapping implementation.
+ The most popular implementation supports annotated controllers but other implementations exists as well.
+
+HandlerAdapter	Helps the DispatcherServlet to invoke a handler mapped to a request regardless of the handler is actually invoked. 
+For example, invoking an annotated controller requires resolving various annotations. Thus the main purpose of a HandlerAdapter 
+is to shield the DispatcherServlet from such details.
+
+------------ related to spring MVC and JSP Begin-----------------
+
+ViewResolver	Resolves logical String-based view names to actual View types.
+
+
+DispatcherServlet Processing Sequence
+After you set up a DispatcherServlet, and a request comes in for that specific DispatcherServlet, the DispatcherServlet 
+starts processing the request as follows:
+
+The WebApplicationContext is searched for and bound in the request as an attribute that the controller and other elements 
+in the process can use. It is bound by default under the key DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE.
+
+The locale resolver is bound to the request to enable elements in the process to resolve the locale to use when processing 
+the request (rendering the view, preparing data, and so on). If you do not need locale resolving, you do not need it.
+
+The theme resolver is bound to the request to let elements such as views determine which theme to use. If you do not use themes, 
+you can ignore it.
+
+If you specify a multipart file resolver, the request is inspected for multiparts; if multiparts are found, the request 
+is wrapped in a MultipartHttpServletRequest for further processing by other elements in the process.
+
+
+An appropriate handler is searched for. If a handler is found, the execution chain associated with the handler 
+(preprocessors, postprocessors, and controllers) is executed in order to prepare a model or rendering.
+
+If a model is returned, the view is rendered. If no model is returned, (may be due to a preprocessor or postprocessor intercepting the request, perhaps for security reasons), no view is rendered, because the request could already have been fulfilled.
+
+Handler exception resolvers that are declared in the WebApplicationContext pick up exceptions that are thrown during processing 
+of the request. Using these exception resolvers allows you to define custom behaviors to address exceptions.
+
+------------ related to spring MVC and JSP end-----------------
+
+
+The Spring DispatcherServlet also supports the return of the last-modification-date, as specified by the Servlet API. 
+The process of determining the last modification date for a specific request is straightforward: the DispatcherServlet looks up 
+an appropriate handler mapping and tests whether the handler that is found implements the LastModified interface. If so, the value of the long getLastModified(request) method of the LastModified interface is returned to the client.
+
+You can customize individual DispatcherServlet instances by adding Servlet initialization parameters (init-param elements) 
+to the Servlet declaration in the web.xml
+
+
+@Controller
+public class HelloWorldController {
+
+    @RequestMapping("/helloWorld")
+    public String helloWorld(Model model) {
+        model.addAttribute("message", "Hello World!");
+        return "helloWorld";
+    }
+}
+
+
+The @Controller annotation indicates that a particular class serves the role of a controller. Spring does not require you
+ to extend any controller base class or reference the Servlet API. However, you can still reference Servlet-specific features 
+if you need to.
+
+The @Controller annotation acts as a stereotype for the annotated class, indicating its role. The dispatcher scans such 
+annotated classes for mapped methods and detects @RequestMapping annotations (see the next section).
+
+When a @PathVariable annotation is used on a Map<String, String> argument, the map is populated with all URI template variables.
+
+A URI template can be assembled from type and path level @RequestMapping annotations. As a result the findPet() method can be invoked with a URL such as /owners/42/pets/21.
+
+@Controller
+@RequestMapping("/owners/{ownerId}")
+public class RelativePathUriTemplateController {
+
+  @RequestMapping("/pets/{petId}")
+  public void findPet(@PathVariable String ownerId, @PathVariable String petId, Model model) {
+    // implementation omitted
+  }
+}
+A @PathVariable argument can be of any simple type such as int, long, Date, etc. Spring automatically converts to the appropriate
+ type or throws a TypeMismatchException if it fails to do so. You can also register support for parsing additional data types
+
+If the method is annotated with @ResponseBody, the return type is written to the response HTTP body. The return value will be 
+converted to the declared method argument type using HttpMessageConverters. See the section called “Mapping the response body 
+with the @ResponseBody annotation”.
+
+A HttpEntity<?> or ResponseEntity<?> object to provide access to the Servlet response HTTP headers and contents. 
+The entity body will be converted to the response stream using HttpMessageConverters. See the section called “Using HttpEntity<?>”.
+
+Binding request parameters to method parameters with @RequestParam
+Use the @RequestParam annotation to bind request parameters to a method parameter in your controller.
+
+Mapping the request body with the @RequestBody annotation
+The @RequestBody method parameter annotation indicates that a method parameter should be bound to the value of the HTTP request body. For example:
+
+@RequestMapping(value = "/something", method = RequestMethod.PUT)
+public void handle(@RequestBody String body, Writer writer) throws IOException {
+  writer.write(body);
+}
+
+
+Mapping the response body with the @ResponseBody annotation
+The @ResponseBody annotation is similar to @RequestBody. This annotation can be put on a method and indicates that the return type should be written straight to the HTTP response body (and not placed in a Model, or interpreted as a view name). For example:
+
+@RequestMapping(value = "/something", method = RequestMethod.PUT)
+@ResponseBody
+public String helloWorld()  {
+  return "Hello World";
+}
+The above example will result in the text Hello World being written to the HTTP response stream.
+
+As with @RequestBody, Spring converts the returned object to a response body by using an HttpMessageConverter
+
+
+
+Rest Controller
+Spring RestController annotation is a convenience annotation that is itself annotated with @Controller and @ResponseBody. 
+This annotation is applied to a class to mark it as a request handler.
+
+Spring RestController annotation is used to create RESTful web services using Spring MVC. 
+Spring RestController takes care of mapping request data to the defined request handler method. Once response body is generated 
+from the handler method, it converts it to JSON or XML response.
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.journaldev.spring.model.Employee;
+import com.journaldev.spring.repository.EmployeeRepository;
+
+@RestController
+public class EmployeeRestController {
+
+	@Autowired
+	private EmployeeRepository repository;
+	
+	@GetMapping("/rest/employee/get/{id}")
+	public Employee getEmployeeByID(@PathVariable("id") int id) {
+		return repository.retrieve(id);
+	}
+	
+	@GetMapping("/rest/employee/getAll")
+	//Returning is List is supported with JSON response only
+	//If you want XML, then add a wrapper class as Root XML element, for example EmployeeList
+	public List<Employee> getAllEmployees() {
+		return repository.getAll();
+	}
+
+	@PostMapping("/rest/employee/create")
+	public Employee createEmployee(@RequestBody Employee emp) {
+		repository.store(emp);
+		return emp;
+	}
+	
+	@GetMapping("/rest/employee/search/{name}")
+	public Employee getEmployeeByName(@PathVariable("name") String name) {
+		return repository.search(name);
+	}
+	
+	@DeleteMapping("/rest/employee/delete/{id}")
+	public Employee deleteEmployeeByID(@PathVariable("id") int id) {
+		return repository.delete(id);
+	}
+}
+
+PUT method is idempotent. So if we retry a request multiple times, that should be equivalent to a single request invocation.
+Use PUT when we want to modify a singular resource that is already a part of resources collection.
+PUT replaces the resource in its entirety. Use PATCH if request updates part of the resource.
+
+The POST method is used to request that the origin server accept the entity attached in the request as a new subordinate of the resource identified by the Request-URI in the Request-Line.
+It essentially means that POST request-URI should be of a collection URI.
+POST /questions
+POST is NOT idempotent. So if we retry the request N times, we will end up having N resources with N different URIs created on
+ the server.
+
+
+GET 	/device-management/devices       : Get all devices
+POST 	/device-management/devices       : Create a new device
+GET 	/device-management/devices/{id}   : Get the device information identified by "id"
+PUT 	/device-management/devices/{id}   : Update the device information identified by "id"
+DELETE	/device-management/devices/{id}   : Delete device by "id"
+
+
+
+
+Spring Boot
+
+Spring Boot makes it easy to create stand-alone, production-grade Spring based Applications that you can "just run".
+We take an opinionated view of the Spring platform and third-party libraries so you can get started with minimum fuss. 
+Most Spring Boot applications need minimal Spring configuration.
+
+Features
+Create stand-alone Spring applications
+Embed Tomcat, Jetty or Undertow directly (no need to deploy WAR files)
+Provide opinionated 'starter' dependencies to simplify your build configuration
+Automatically configure Spring and 3rd party libraries whenever possible
+Provide production-ready features such as metrics, health checks, and externalized configuration
+Absolutely no code generation and no requirement for XML configuration
+
+
+Spring Boot provides a number of starters that allow us to add jars in the classpath. Spring Boot built-in starters
+make development easier and rapid. Spring Boot Starters are the dependency descriptors.
+
+Spring Boot Starters
+In the Spring Boot Framework, all the starters follow a similar naming pattern: spring-boot-starter-*, where * denotes 
+a particular type of application. For example, if we want to use Spring and JPA for database access, we need to include the 
+spring-boot-starter-data-jpa dependency in our pom.xml file of the project.
+
+
+
+Spring Boot Starter Web
+There are two important features of spring-boot-starter-web:
+It is compatible for web development
+Auto configuration
+If we want to develop a web application, we need to add the following dependency in pom.xml file:
+<dependency>  
+<groupId>org.springframework.boot</groupId>  
+<artifactId>spring-boot-starter-web</artifactId>  
+<version>2.2.2.RELEASE</version>  
+</dependency>  
+
+Spring Boot Starter Parent
+The spring-boot-starter-parent is a project starter. It provides default configurations for our applications. 
+It is used internally by all dependencies. All Spring Boot projects use spring-boot-starter-parent as a parent in pom.xml file.
+<parent>  
+<groupId>org.springframework.boot</groupId>  
+<artifactId>spring-boot-starter-parent</artifactId>  
+<version>1.4.0.RELEASE</version>  
+</parent>  
+
+
+Using the @SpringBootApplication Annotation
+Many Spring Boot developers like their apps to use auto-configuration, component scan and be able to define extra 
+configuration on their "application class". A single @SpringBootApplication annotation can be used to enable those three
+ features, that is:
+
+@EnableAutoConfiguration: enable Spring Boot’s auto-configuration mechanism
+@ComponentScan: enable @Component scan on the package where the application is located (see the best practices)
+@Configuration: allow to register extra beans in the context or import additional configuration classes
+The @SpringBootApplication annotation is equivalent to using @Configuration, @EnableAutoConfiguration, and @ComponentScan
+with their default attributes, as shown in the following example:
+
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
+public class Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Application.class, args);
+	}
+
+}
+
+Spring Data JPA
+Spring Data JPA, part of the larger Spring Data family, makes it easy to easily implement JPA based repositories. 
+This module deals with enhanced support for JPA based data access layers. It makes it easier to build Spring-powered applications 
+that use data access technologies.
+
+by implementing one of the Repository interfaces, the DAO will already have some basic CRUD methods (and queries) defined and implemented.
+
+To define more specific access methods, Spring JPA supports quite a few options:
+
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+   <artifactId>spring-boot-starter-data-jpa</artifactId>
+   <version>2.5.11</version>
+</dependency>
+
+
+simply define a new method in the interface
+provide the actual JPQL query by using the @Query annotation
+use the more advanced Specification and Querydsl support in Spring Data
+define custom queries via JPA Named Queries
+
+
+public interface EmployeeDAO extends JpaRepository<Employee, Long> {
+    Employee findByName(String name);
+}
+
+
+@Query("SELECT f FROM Foo f WHERE LOWER(f.name) = LOWER(:name)")
+Foo retrieveByName(@Param("name") String name);
+
+@Query("SELECT t.title FROM Todo t where t.id = :id") 
+String findTitleById(@Param("id") Long id);
+     
+@Query("SELECT t.title FROM Todo t where t.id = :id") 
+Optional<String> findTitleById(@Param("id") Long id);
+
+
+
+Using Named Queries With Spring Data JPA
+Before we can implement our search function, we have to understand how we can use named queries with Spring Data JPA. 
+In other words, we have to find the answers to these questions:
+
+How can we create named queries?
+How can we create the query methods that invokes our named queries?
+Creating Named Queries
+We can specify named queries with Spring Data JPA by using a properties file, annotations, or the orm.xml file.
+
+Before can take a closer look at these methods, we have to learn a few rules that we must follow when we are specifying the names of our named queries. These rules are:
+
+If we want to use the default naming strategy of Spring Data JPA, we have to specify the name of the named query by using 
+this syntax: [entity class name].[name of the invoked query method].
+If we want to use some other syntax, we have to configure the name of named query when we create the query method that invokes it.
+We can do this by using the name attribute of the @Query annotation.
+
+
+Spring Microservices
+Microservice architectures are the ‘new normal’. Building small, self-contained, ready to run applications can bring great 
+flexibility and added resilience to your code. Spring Boot’s many purpose-built features make it easy to build and run your 
+microservices in production at scale. 
+
+Spring Cloud
+Developing distributed systems can be challenging. Complexity is moved from the application layer to the network layer 
+and demands greater interaction between services. Making your code ‘cloud-native’ means dealing with 12-factor issues such 
+as external configuration, statelessness, logging, and connecting to backing services. The Spring Cloud suite of projects contains 
+many of the services you need to make your applications run in the cloud.
+
+The distributed nature of microservices brings challenges. Spring helps you mitigate these. 
+With several ready-to-run cloud patterns, Spring Cloud can help with service discovery, load-balancing, 
+circuit-breaking, distributed tracing, and monitoring. It can even act as an API gateway.
+
+
+In the modern era, software is commonly delivered as a service: called web apps, or software-as-a-service. 
+The twelve-factor app is a methodology for building software-as-a-service apps that:
+
+Use declarative formats for setup automation, to minimize time and cost for new developers joining the project;
+Have a clean contract with the underlying operating system, offering maximum portability between execution environments;
+Are suitable for deployment on modern cloud platforms, obviating the need for servers and systems administration;
+Minimize divergence between development and production, enabling continuous deployment for maximum agility;
+And can scale up without significant changes to tooling, architecture, or development practices.
+The twelve-factor methodology can be applied to apps written in any programming language, and which use any combination 
+of backing services (database, queue, memory cache, etc).
+
+The Twelve Factors
+I. Codebase
+One codebase tracked in revision control, many deploys
+II. Dependencies
+Explicitly declare and isolate dependencies
+III. Config
+Store config in the environment
+IV. Backing services
+Treat backing services as attached resources
+V. Build, release, run
+Strictly separate build and run stages
+VI. Processes
+Execute the app as one or more stateless processes
+VII. Port binding
+Export services via port binding
+VIII. Concurrency
+Scale out via the process model
+IX. Disposability
+Maximize robustness with fast startup and graceful shutdown
+X. Dev/prod parity
+Keep development, staging, and production as similar as possible
+XI. Logs
+Treat logs as event streams
+XII. Admin processes
+Run admin/management tasks as one-off processes
+
+
+
+Service discovery
+API gateway
+Cloud config
+Circuit breakers
+Tracing
+
+
+Service discovery
+In the cloud, applications can’t always know the exact location of other services. A service registry, such as Netflix Eureka, 
+or a sidecar solution, such as HashiCorp Consul, can help. Spring Cloud provides DiscoveryClient implementations for popular
+registries such as Eureka, Consul, Zookeeper, and even Kubernetes' built-in system. There’s also a Spring Cloud Load Balancer to
+help you distribute the load carefully among your service instances.
+
+
+API gateway
+With so many clients and servers in play, it’s often helpful to include an API gateway in your cloud architecture. 
+A gateway can take care of securing and routing messages, hiding services, throttling load, and many other useful things. 
+Spring Cloud Gateway gives you precise control of your API layer, integrating Spring Cloud service discovery and client-side 
+load-balancing solutions to simplify configuration and maintenance.
+
+
+Cloud configuration
+In the cloud, configuration can’t simply be embedded inside the application. The configuration has to be flexible enough 
+to cope with multiple applications, environments, and service instances, as well as deal with dynamic changes without downtime. 
+Spring Cloud Config is designed to ease these burdens and offers integration with version control systems like Git to help you 
+keep your configuration safe.
+
+Circuit breakers
+Distributed systems can be unreliable. Requests might encounter timeouts or fail completely. A circuit breaker can help 
+mitigate these issues, and Spring Cloud Circuit Breaker gives you the choice of three popular options: Resilience4J, 
+Sentinel, or Hystrix.
+
+
+Tracing
+Debugging distributed applications can be complex and take a long time. For any given failure, you might need to piece 
+together traces of information from several independent services. Spring Cloud Sleuth can instrument your applications 
+in a predictable and repeatable way. And when used in conjunction with Zipkin, you can zero in on any 
+latency problems you might have.
+
+
+
+
+Spring’s support for integration testing and best practices for unit testing.
+
+MockMvc
+The Spring MVC Test framework, also known as MockMvc, provides support for testing Spring MVC applications. 
+It performs full Spring MVC request handling but via mock request and response objects instead of a running server.
+
+MockMvc can be used on its own to perform requests and verify responses. It can also be used through the WebTestClient where 
+MockMvc is plugged in as the server to handle requests with. The advantage of WebTestClient is the option to work with higher 
+level objects instead of raw data as well as the ability to switch to full, end-to-end HTTP tests against a live server and use 
+the same test API.
+
+Testing Client Applications
+You can use client-side tests to test code that internally uses the RestTemplate. The idea is to declare expected requests and 
+to provide “stub” responses so that you can focus on testing the code in isolation (that is, without running a server).
+ The following example shows how to do so:
+
+RestTemplate restTemplate = new RestTemplate();
+
+MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
+mockServer.expect(requestTo("/greeting")).andRespond(withSuccess());
+
+// Test code that uses the above RestTemplate ...
+
+mockServer.verify();
+
+
+
+
+
+Spring Security is a powerful and highly customizable authentication and access-control framework.
+ It is the de-facto standard for securing Spring-based applications.
+
+Spring Security is a framework that focuses on providing both authentication and authorization to Java applications.
+ Like all Spring projects, the real power of Spring Security is found in how easily it can be extended to meet custom requirements
+
+
+Features
+Comprehensive and extensible support for both Authentication and Authorization
+Protection against attacks like session fixation, clickjacking, cross site request forgery, etc
+Servlet API integration
+Optional integration with Spring Web MVC
+
+
+
+
+Spring Security with JWT for REST API
+The Spring Security framework is the de facto industry standard when it comes to securing Spring-based apps, but it can be tricky to configure. In this article, Toptal Software Engineer Ioram Gordadze demonstrates how you can implement it without wasting too much time.
+
+Ioram Gordadze
+AUTHOR
+Ioram Gordadze
+Ioram has a master's degree in computer science and over a decade of professional Java experience. He specializes in 
+enterprise-grade applications.
+0SHARES
+Spring is considered a trusted framework in the Java ecosystem and is widely used. It’s no longer valid to refer to Spring as a
+ framework, as it’s more of an umbrella term that covers various frameworks. One of these frameworks is Spring Security, which is 
+a powerful and customizable authentication and authorization framework. It is considered the de facto standard for securing 
+Spring-based applications.
+
+Despite its popularity, I must admit that when it comes to single-page applications, it’s not simple and straightforward to 
+configure. I suspect the reason is that it started more as an MVC application-oriented framework, where webpage rendering happens 
+on the server-side and communication is session-based.
+
+If the back end is based on Java and Spring, it makes sense to use Spring Security for authentication/authorization and configure 
+it for stateless communication. While there are a lot of articles explaining how this is done, for me, it was still frustrating to
+ set it up for the first time, and I had to read and sum up information from multiple sources. That’s why I decided to write this article, where I will try to summarize and cover all the required subtle details and foibles you may encounter during the configuration process.
+
+Defining Terminology
+Before diving into the technical details, I want to explicitly define the terminology used in the Spring Security context just to 
+be sure that we all speak the same language.
+
+These are the terms we need to address:
+
+Authentication refers to the process of verifying the identity of a user, based on provided credentials. A common example is 
+entering a username and a password when you log in to a website. You can think of it as an answer to the question Who are you?.
+Authorization refers to the process of determining if a user has proper permission to perform a particular action or read particular 
+data, assuming that the user is successfully authenticated. You can think of it as an answer to the question Can a user do/read this?.
+Principle refers to the currently authenticated user.
+Granted authority refers to the permission of the authenticated user.
+Role refers to a group of permissions of the authenticated user.
+Creating a Basic Spring Application
+Before moving to the configuration of the Spring Security framework, let’s create a basic Spring web application. For this, we
+ can use a Spring Initializr and generate a template project. For a simple web application, only a Spring web framework dependency 
+is enough:
+
+<dependencies>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+</dependencies>
+Once we have created the project, we can add a simple REST controller to it as follows:
+
+@RestController @RequestMapping("hello")
+public class HelloRestController {
+
+    @GetMapping("user")
+    public String helloUser() {
+        return "Hello User";
+    }
+
+    @GetMapping("admin")
+    public String helloAdmin() {
+        return "Hello Admin";
+    }
+
+}
+After this, if we build and run the project, we can access the following URLs in the web browser:
+
+http://localhost:8080/hello/user will return the string Hello User.
+http://localhost:8080/hello/admin will return the string Hello Admin.
+Now, we can add the Spring Security framework to our project, and we can do this by adding the following dependency to our pom.xml file:
+
+<dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+</dependencies>
+Adding other Spring framework dependencies doesn’t normally have an immediate effect on an application until we provide the 
+corresponding configuration, but Spring Security is different in that it does have an immediate effect, and this usually confuses
+ new users. After adding it, if we rebuild and run the project and then try to access one of the aforementioned URLs instead of
+ viewing the result, we will be redirected to http://localhost:8080/login. This is default behavior because the Spring Security framework requires authentication out of the box for all URLs.
+
+To pass the authentication, we can use the default username user and find an auto-generated password in our console:
+
+Using generated security password: 1fc15145-dfee-4bec-a009-e32ca21c77ce
+Please remember that the password changes each time we rerun the application. If we want to change this behavior and make the
+ password static, we can add the following configuration to our application.properties file:
+
+spring.security.user.password=Test12345_
+Now, if we enter credentials in the login form, we will be redirected back to our URL and we will see the correct result. Please note that the out-of-the-box authentication process is session-based, and if we want to log out, we can access the following URL: http://localhost:8080/logout
+
+This out-of-the-box behavior may be useful for classic MVC web applications where we have session-based authentication, but 
+in the case of single-page applications, it’s usually not useful because in most use cases, we have client-side rendering and JWT-based stateless authentication. In this case, we will have to heavily customize the Spring Security framework, which we will do in the remainder of the article.
+
+As an example, we will implement a classic bookstore web application and create a back end that will provide CRUD APIs to create authors and books plus APIs for user management and authentication.
+
+Spring Security Architecture Overview
+Before we start customizing the configuration, let’s first discuss how Spring Security authentication works behind the scenes.
+
+The following diagram presents the flow and shows how authentication requests are processed:
+
+Spring Security Architecture
+
+Spring Security Architecture
+Now, let’s break down this diagram into components and discuss each of them separately.
+
+Spring Security Filters Chain
+When you add the Spring Security framework to your application, it automatically registers a filters chain that intercepts all incoming requests. This chain consists of various filters, and each of them handles a particular use case.
+
+For example:
+
+Check if the requested URL is publicly accessible, based on configuration.
+In case of session-based authentication, check if the user is already authenticated in the current session.
+Check if the user is authorized to perform the requested action, and so on.
+One important detail I want to mention is that Spring Security filters are registered with the lowest order and are the first filters invoked. For some use cases, if you want to put your custom filter in front of them, you will need to add padding to their order. This can be done with the following configuration:
+
+spring.security.filter.order=10
+Once we add this configuration to our application.properties file, we will have space for 10 custom filters in front of the Spring Security filters.
+
+AuthenticationManager
+You can think of AuthenticationManager as a coordinator where you can register multiple providers, and based on the request type, it will deliver an authentication request to the correct provider.
+
+AuthenticationProvider
+AuthenticationProvider processes specific types of authentication. Its interface exposes only two functions:
+
+authenticate performs authentication with the request.
+supports checks if this provider supports the indicated authentication type.
+One important implementation of the interface that we are using in our sample project is DaoAuthenticationProvider, which retrieves user details from a UserDetailsService.
+
+UserDetailsService
+UserDetailsService is described as a core interface that loads user-specific data in the Spring documentation.
+
+In most use cases, authentication providers extract user identity information based on credentials from a database and then perform validation. Because this use case is so common, Spring developers decided to extract it as a separate interface, which exposes the single function:
+
+loadUserByUsername accepts username as a parameter and returns the user identity object.
+Authentication Using JWT with Spring Security
+After discussing the internals of the Spring Security framework, let’s configure it for stateless authentication with a JWT token.
+
+To customize Spring Security, we need a configuration class annotated with @EnableWebSecurity annotation in our classpath. Also, to simplify the customization process, the framework exposes a WebSecurityConfigurerAdapter class. We will extend this adapter and override both of its functions so as to:
+
+Configure the authentication manager with the correct provider
+Configure web security (public URLs, private URLs, authorization, etc.)
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        // TODO configure authentication manager
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // TODO configure web security
+    }
+
+}
+In our sample application, we store user identities in a MongoDB database, in the users collection. These identities are mapped by the User entity, and their CRUD operations are defined by the UserRepo Spring Data repository.
+
+Now, when we accept the authentication request, we need to retrieve the correct identity from the database using the provided credentials and then verify it. For this, we need the implementation of the UserDetailsService interface, which is defined as follows:
+
+public interface UserDetailsService {
+
+    UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException;
+
+}
+Here, we can see that it is required to return the object that implements the UserDetails interface, and our User entity implements it (for implementation details, please see the sample project’s repository). Considering the fact that it exposes only the single-function prototype, we can treat it as a functional interface and provide implementation as a lambda expression.
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final UserRepo userRepo;
+
+    public SecurityConfig(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(username -> userRepo
+            .findByUsername(username)
+            .orElseThrow(
+                () -> new UsernameNotFoundException(
+                    format("User: %s, not found", username)
+                )
+            ));
+    }
+
+    // Details omitted for brevity
+
+}
+Here, the auth.userDetailsService function call will initiate the DaoAuthenticationProvider instance using our implementation 
+of the UserDetailsService interface and register it in the authentication manager.
+
+Along with the authentication provider, we need to configure an authentication manager with the correct password-encoding schema 
+that will be used for credentials verification. For this, we need to expose the preferred implementation of the PasswordEncoder interface as a bean.
+
+In our sample project, we will use the bcrypt password-hashing algorithm.
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final UserRepo userRepo;
+
+    public SecurityConfig(UserRepo userRepo) {
+        this.userRepo = userRepo;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(username -> userRepo
+            .findByUsername(username)
+            .orElseThrow(
+                () -> new UsernameNotFoundException(
+                    format("User: %s, not found", username)
+                )
+            ));
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // Details omitted for brevity
+
+}
+Having configured the authentication manager, we now need to configure web security. We are implementing a REST API and 
+need stateless authentication with a JWT token; therefore, we need to set the following options:
+
+Enable CORS and disable CSRF.
+Set session management to stateless.
+Set unauthorized requests exception handler.
+Set permissions on endpoints.
+Add JWT token filter.
+This configuration is implemented as follows:
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final UserRepo userRepo;
+    private final JwtTokenFilter jwtTokenFilter;
+
+    public SecurityConfig(UserRepo userRepo,
+                          JwtTokenFilter jwtTokenFilter) {
+        this.userRepo = userRepo;
+        this.jwtTokenFilter = jwtTokenFilter;
+    }
+
+    // Details omitted for brevity
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Enable CORS and disable CSRF
+        http = http.cors().and().csrf().disable();
+
+        // Set session management to stateless
+        http = http
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and();
+
+        // Set unauthorized requests exception handler
+        http = http
+            .exceptionHandling()
+            .authenticationEntryPoint(
+                (request, response, ex) -> {
+                    response.sendError(
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        ex.getMessage()
+                    );
+                }
+            )
+            .and();
+
+        // Set permissions on endpoints
+        http.authorizeRequests()
+            // Our public endpoints
+            .antMatchers("/api/public/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/author/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/author/search").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/book/search").permitAll()
+            // Our private endpoints
+            .anyRequest().authenticated();
+
+        // Add JWT token filter
+        http.addFilterBefore(
+            jwtTokenFilter,
+            UsernamePasswordAuthenticationFilter.class
+        );
+    }
+
+    // Used by spring security if CORS is enabled.
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source =
+            new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
+
+}
+Please note that we added the JwtTokenFilter before the Spring Security internal UsernamePasswordAuthenticationFilter. 
+We’re doing this because we need access to the user identity at this point to perform authentication/authorization, and its 
+extraction happens inside the JWT token filter based on the provided JWT token. This is implemented as follows:
+
+@Component
+public class JwtTokenFilter extends OncePerRequestFilter {
+
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserRepo userRepo;
+
+    public JwtTokenFilter(JwtTokenUtil jwtTokenUtil,
+                          UserRepo userRepo) {
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userRepo = userRepo;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain)
+            throws ServletException, IOException {
+        // Get authorization header and validate
+        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (isEmpty(header) || !header.startsWith("Bearer ")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Get jwt token and validate
+        final String token = header.split(" ")[1].trim();
+        if (!jwtTokenUtil.validate(token)) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Get user identity and set it on the spring security context
+        UserDetails userDetails = userRepo
+            .findByUsername(jwtTokenUtil.getUsername(token))
+            .orElse(null);
+
+        UsernamePasswordAuthenticationToken
+            authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null,
+                userDetails == null ?
+                    List.of() : userDetails.getAuthorities()
+            );
+
+        authentication.setDetails(
+            new WebAuthenticationDetailsSource().buildDetails(request)
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        chain.doFilter(request, response);
+    }
+
+}
+Before implementing our login API function, we need to take care of one more step - we need access to the authentication manager. 
+By default, it’s not publicly accessible, and we need to explicitly expose it as a bean in our configuration class.
+
+This can be done as follows:
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    // Details omitted for brevity
+
+    @Override @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+}
+And now, we are ready to implement our login API function:
+
+@Api(tags = "Authentication")
+@RestController @RequestMapping(path = "api/public")
+public class AuthApi {
+
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserViewMapper userViewMapper;
+
+    public AuthApi(AuthenticationManager authenticationManager,
+                   JwtTokenUtil jwtTokenUtil,
+                   UserViewMapper userViewMapper) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userViewMapper = userViewMapper;
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<UserView> login(@RequestBody @Valid AuthRequest request) {
+        try {
+            Authentication authenticate = authenticationManager
+                .authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                        request.getUsername(), request.getPassword()
+                    )
+                );
+
+            User user = (User) authenticate.getPrincipal();
+
+            return ResponseEntity.ok()
+                .header(
+                    HttpHeaders.AUTHORIZATION,
+                    jwtTokenUtil.generateAccessToken(user)
+                )
+                .body(userViewMapper.toUserView(user));
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+}
+Here, we verify the provided credentials using the authentication manager, and in case of success, we generate the JWT token 
+and return it as a response header along with the user identity information in the response body.
+
+Authorization with Spring Security
+In the previous section, we set up an authentication process and configured public/private URLs. This may be enough for simple 
+applications, but for most real-world use cases, we always need role-based access policies for our users. In this chapter, 
+we will address this issue and set up a role-based authorization schema using the Spring Security framework.
+
+In our sample application, we have defined the following three roles:
+
+USER_ADMIN allows us to manage application users.
+AUTHOR_ADMIN allows us to manage authors.
+BOOK_ADMIN allows us to manage books.
+Now, we need to apply them to the corresponding URLs:
+
+api/public is publicly accessible.
+api/admin/user can access users with the USER_ADMIN role.
+api/author can access users with the AUTHOR_ADMIN role.
+api/book can access users with the BOOK_ADMIN role.
+The Spring Security framework provides us with two options to set up the authorization schema:
+
+URL-based configuration
+Annotation-based configuration
+First, let’s see how URL-based configuration works. It can be applied to the web security configuration as follows:
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    // Details omitted for brevity
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Enable CORS and disable CSRF
+        http = http.cors().and().csrf().disable();
+
+        // Set session management to stateless
+        http = http
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and();
+
+        // Set unauthorized requests exception handler
+        http = http
+            .exceptionHandling()
+            .authenticationEntryPoint(
+                (request, response, ex) -> {
+                    response.sendError(
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        ex.getMessage()
+                    );
+                }
+            )
+            .and();
+
+        // Set permissions on endpoints
+        http.authorizeRequests()
+            // Our public endpoints
+            .antMatchers("/api/public/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/author/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/author/search").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/book/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/book/search").permitAll()
+            // Our private endpoints
+            .antMatchers("/api/admin/user/**").hasRole(Role.USER_ADMIN)
+            .antMatchers("/api/author/**").hasRole(Role.AUTHOR_ADMIN)
+            .antMatchers("/api/book/**").hasRole(Role.BOOK_ADMIN)
+            .anyRequest().authenticated();
+
+        // Add JWT token filter
+        http.addFilterBefore(
+            jwtTokenFilter,
+            UsernamePasswordAuthenticationFilter.class
+        );
+    }
+
+    // Details omitted for brevity
+
+}
+As you can see, this approach is simple and straightforward, but it has one downside. The authorization schema in our
+ application
+ can be complex, and if we define all the rules in a single place, it will become very big, complex, and hard to read.
+ Because of 
+this, I usually prefer to use annotation-based configuration.
+
+The Spring Security framework defines the following annotations for web security:
+
+@PreAuthorize supports Spring Expression Language and is used to provide expression-based access control before executing the 
+method.
+@PostAuthorize supports Spring Expression Language and is used to provide expression-based access control after executing the
+ method (provides the ability to access the method result).
+@PreFilter supports Spring Expression Language and is used to filter the collection or arrays before executing the method based on
+ custom security rules we define.
+@PostFilter supports Spring Expression Language and is used to filter the returned collection or arrays after executing the method
+ based on custom security rules we define (provides the ability to access the method result).
+@Secured doesn’t support Spring Expression Language and is used to specify a list of roles on a method.
+@RolesAllowed doesn’t support Spring Expression Language and is the JSR 250’s equivalent annotation of the @Secured annotation.
+These annotations are disabled by default and can be enabled in our application as follows:
+
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(
+    securedEnabled = true,
+    jsr250Enabled = true,
+    prePostEnabled = true
+)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    // Details omitted for brevity
+
+}
+
+securedEnabled = true enables @Secured annotation.
+jsr250Enabled = true enables @RolesAllowed annotation.
+prePostEnabled = true enables @PreAuthorize, @PostAuthorize, @PreFilter, @PostFilter annotations.
+
+After enabling them, we can enforce role-based access policies on our API endpoints like this:
+
+@Api(tags = "UserAdmin")
+@RestController @RequestMapping(path = "api/admin/user")
+@RolesAllowed(Role.USER_ADMIN)
+public class UserAdminApi {
+
+	// Details omitted for brevity
+
+}
+
+@Api(tags = "Author")
+@RestController @RequestMapping(path = "api/author")
+public class AuthorApi {
+
+	// Details omitted for brevity
+
+	@RolesAllowed(Role.AUTHOR_ADMIN)
+	@PostMapping
+	public void create() { }
+
+	@RolesAllowed(Role.AUTHOR_ADMIN)
+	@PutMapping("{id}")
+	public void edit() { }
+
+	@RolesAllowed(Role.AUTHOR_ADMIN)
+	@DeleteMapping("{id}")
+	public void delete() { }
+
+	@GetMapping("{id}")
+	public void get() { }
+
+	@GetMapping("{id}/book")
+	public void getBooks() { }
+
+	@PostMapping("search")
+	public void search() { }
+
+}
+
+@Api(tags = "Book")
+@RestController @RequestMapping(path = "api/book")
+public class BookApi {
+
+	// Details omitted for brevity
+
+	@RolesAllowed(Role.BOOK_ADMIN)
+	@PostMapping
+	public BookView create() { }
+
+	@RolesAllowed(Role.BOOK_ADMIN)
+	@PutMapping("{id}")
+	public void edit() { }
+
+	@RolesAllowed(Role.BOOK_ADMIN)
+	@DeleteMapping("{id}")
+	public void delete() { }
+
+	@GetMapping("{id}")
+	public void get() { }
+
+	@GetMapping("{id}/author")
+	public void getAuthors() { }
+
+	@PostMapping("search")
+	public void search() { }
+
+}
+Please note that security annotations can be provided both on the class level and the method level.
+
+The demonstrated examples are simple and do not represent real-world scenarios, but Spring Security provides a rich set of
+ annotations, and you can handle a complex authorization schema if you choose to use them.
+
+Role Name Default Prefix
+In this separate subsection, I want to emphasize one more subtle detail that confuses a lot of new users.
+
+The Spring Security framework differentiates two terms:
+
+Authority represents an individual permission.
+Role represents a group of permissions.
+Both can be represented with a single interface called GrantedAuthority and later checked with Spring Expression Language inside
+ the Spring Security annotations as follows:
+
+Authority: @PreAuthorize(“hasAuthority(‘EDIT_BOOK’)”)
+Role: @PreAuthorize(“hasRole(‘BOOK_ADMIN’)”)
+To make the difference between these two terms more explicit, the Spring Security framework adds a ROLE_ prefix to the role name 
+by default. So, instead of checking for a role named BOOK_ADMIN, it will check for ROLE_BOOK_ADMIN.
+
+Personally, I find this behavior confusing and prefer to disable it in my applications. It can be disabled inside the Spring
+ Security configuration as follows:
+
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    // Details omitted for brevity
+
+    @Bean
+    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
+    }
+
+}
+Testing with Spring Security
+To test our endpoints with unit or integration tests when using the Spring Security framework, we need to add spring-security-test
+ dependency along with the spring-boot-starter-test. Our pom.xml build file will look like this:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope>
+    <exclusions>
+        <exclusion>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-test</artifactId>
+    <scope>test</scope>
+</dependency>
+This dependency gives us access to some annotations that can be used to add security context to our test functions.
+
+These annotations are:
+
+@WithMockUser can be added to a test method to emulate running with a mocked user.
+@WithUserDetails can be added to a test method to emulate running with UserDetails returned from the UserDetailsService.
+@WithAnonymousUser can be added to a test method to emulate running with an anonymous user. This is useful when a user wants to 
+run a majority of tests as a specific user and override a few methods to be anonymous.
+@WithSecurityContext determines what SecurityContext to use, and all three annotations described above are based on it.
+ If we have
+ a specific use case, we can create our own annotation that uses @WithSecurityContext to create any SecurityContext we want. Its 
+discussion is outside the scope of our article, and please refer to the Spring Security documentation for further details.
+The easiest way to run the tests with a specific user is to use the @WithMockUser annotation. We can create a mock user with it 
+and run the test as follows:
+
+@Test @WithMockUser(username="customUsername@example.io", roles={"USER_ADMIN"})
+public void test() {
+	// Details omitted for brevity
+}
+This approach has a couple of drawbacks, though. First, the mock user doesn’t exist, and if you run the integration test, which
+ later queries the user information from the database, the test will fail. Second, the mock user is the instance of the 
+org.springframework.security.core.userdetails.User class, which is the Spring framework’s internal implementation of the 
+UserDetails interface, and if we have our own implementation, this can cause conflicts later, during test execution.
+
+If previous drawbacks are blockers for our application, then the @WithUserDetails annotation is the way to go. It is used when
+ we have custom UserDetails and UserDetailsService implementations. It assumes that the user exists, so we have to either create 
+the actual row in the database or provide the UserDetailsService mock instance before running tests.
+
+This is how we can use this annotation:
+
+@Test @WithUserDetails("customUsername@example.io")
+public void test() {
+	// Details omitted for brevity
+}
+This is a preferred annotation in our sample project’s integration tests because we have custom implementations of the aforementioned interfaces.
+
+Using @WithAnonymousUser allows running as an anonymous user. This is especially convenient when you wish to run most tests 
+with a specific user but a few tests as an anonymous user. For example, the following will run test1 and test2 test cases with 
+a mock user and test3 with an anonymous user:
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@WithMockUser
+public class WithUserClassLevelAuthenticationTests {
+
+    @Test
+    public void test1() {
+        // Details omitted for brevity
+    }
+
+    @Test
+    public void test2() {
+        // Details omitted for brevity
+    }
+
+    @Test @WithAnonymousUser
+    public void test3() throws Exception {
+        // Details omitted for brevity
+    }
+}
+
+
+
+
+
+
+
+
