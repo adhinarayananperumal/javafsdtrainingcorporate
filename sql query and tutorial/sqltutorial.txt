@@ -1,0 +1,679 @@
+RDBMS
+An RDBMS, or relational database management system, is the software that gives users 
+the ability to insert, update, delete , retrival and administer a relational database. 
+
+Structured Query Language
+(SQL) is typically the standard programming language used to access the database.
+
+
+Here is the list of top 10 most popular RDBMSs are:
+Oracle.
+MySQL.
+SQL Server.
+PostgreSQL.
+IBM DB2.
+Microsoft Access.
+SQLite.
+MariaDB.
+
+
+install postgresql
+install mysql server
+
+
+Server:
+In computing, a server is a piece of computer hardware or software that provides functionality for other programs or devices, 
+called "clients". This architecture is called the client–server model.
+
+
+Below are 13 of the most common server types used today:
+Application Servers. ...
+Client Servers. ...
+Collaboration Servers. ...
+FTP Servers. ...
+List Servers. ...
+Mail Servers. ... SMTP
+Open Source Servers. ...
+Proxy Servers.
+RDBMS Server
+HTTP Server
+
+
+In computer networking, a port is a communication endpoint. At the software level, within an operating system,
+ a port is a logical construct that identifies a specific process or a type of network service. 
+A port is identified for each transport protocol and address combination by a 16-bit unsigned number, known as the port number. 
+The most common transport protocols that use port numbers are the Transmission Control Protocol (TCP) and the User
+ Datagram Protocol (UDP).
+
+IP Address
+
+
+A port number is a 16-bit unsigned integer, thus ranging from 0 to 65535. 
+
+SQL -  Structured Query Language
+
+SET SQL_SAFE_UPDATES=0;
+
+sql command to create table :
+
+	create table userdetails(
+	fname varchar(100),
+	lastname varchar(100)
+	)
+
+Sql Command to retrive rows
+	select * from userdetails;
+	
+Sql Command to INSERT ROW
+	insert into userdetails values('hari' , 'haran');
+	insert into userdetails values('sam' , 'vel');
+	insert into userdetails values('arthi' , 'lakshmi');
+	insert into userdetails values('rishi' , 'kumar');
+
+Sql Command to RETRIVE SINGLE ROW
+
+select from userdetails where
+
+
+Introduction
+Data type is an attribute associated with a piece of data that tells a computer system how to interpret its value. 
+Understanding data types ensures that data is collected in the preferred format and the value of each property is as expected.
+
+Data types available in postrewsql
+
+Name	Aliases	Description
+bigint	int8	signed eight-byte integer
+bigserial	serial8	autoincrementing eight-byte integer
+bit [ (n) ]	 	fixed-length bit string
+bit varying [ (n) ]	varbit [ (n) ]	variable-length bit string
+boolean	bool	logical Boolean (true/false)
+box	 	rectangular box on a plane
+bytea	 	binary data ("byte array")
+character [ (n) ]	char [ (n) ]	fixed-length character string
+character varying [ (n) ]	varchar [ (n) ]	variable-length character string
+cidr	 	IPv4 or IPv6 network address
+circle	 	circle on a plane
+date	 	calendar date (year, month, day)
+double precision	float8	double precision floating-point number (8 bytes)
+inet	 	IPv4 or IPv6 host address
+integer	int, int4	signed four-byte integer
+interval [ fields ] [ (p) ]	 	time span
+json	 	textual JSON data
+jsonb	 	binary JSON data, decomposed
+line	 	infinite line on a plane
+lseg	 	line segment on a plane
+macaddr	 	MAC (Media Access Control) address
+money	 	currency amount
+numeric [ (p, s) ]	decimal [ (p, s) ]	exact numeric of selectable precision
+path	 	geometric path on a plane
+pg_lsn	 	PostgreSQL Log Sequence Number
+point	 	geometric point on a plane
+polygon	 	closed geometric path on a plane
+real	float4	single precision floating-point number (4 bytes)
+smallint	int2	signed two-byte integer
+smallserial	serial2	autoincrementing two-byte integer
+serial	serial4	autoincrementing four-byte integer
+text	 	variable-length character string
+time [ (p) ] [ without time zone ]	 	time of day (no time zone)
+time [ (p) ] with time zone	timetz	time of day, including time zone
+timestamp [ (p) ] [ without time zone ]	 	date and time (no time zone)
+timestamp [ (p) ] with time zone	timestamptz	date and time, including time zone
+tsquery	 	text search query
+tsvector	 	text search document
+txid_snapshot	 	user-level transaction ID snapshot
+uuid	 	universally unique identifier
+xml	 	XML data
+
+
+what is mean by ASCII
+
+use iqdb;
+SET SQL_SAFE_UPDATES=0;
+
+		create table employee(
+		fname varchar(100),
+		lastname varchar(100),
+		age int2,
+		salary float4  
+	    )
+		
+	    select * from employee;	
+		insert into employee values ('ravi','kumar',34,5000.50);
+		insert into employee values ('priya','sumathi',34,5000.50);
+		insert into employee values ('xx','yy',46,10000);
+
+		
+		select * from employee where fname='ravi';
+		select * from employee where age>35;
+		select * from employee where age<35;
+		select * from employee where age=34;
+
+	// write query to retrive record whose salary greater 5000
+	select * from employee where salary>5000;
+	select * from employee where salary>6000;
+	select * from employee where salary>6000 and age > 10;
+	select * from employee where salary>6000 and age > 50;
+
+
+The UPDATE statement is used to modify the existing records in a table.
+
+UPDATE Syntax
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+
+//update query
+	update employee set  salary=13000  where fname='priya';
+    select * from employee;
+	update employee set  age=23  where fname='xx';
+    update employee set  age=50 , salary=20000  where lastname='kumar';
+
+
+
+
+
+// delete
+The SQL DELETE Statement
+The DELETE statement is used to delete existing records in a table.
+
+DELETE Syntax
+DELETE FROM table_name WHERE condition;
+Note: Be careful when deleting records in a table! Notice the WHERE clause in the DELETE statement. 
+The WHERE clause specifies which record(s) should be deleted. If you omit the WHERE clause, all records in the
+ table will be deleted!
+
+delete from employee where lastname='yy';
+    select * from employee;
+
+		insert into employee values ('e1','11',50,25000);
+		insert into employee values ('e2','22',50,50000);
+        	insert into employee values ('e1','eee',35,125000);
+
+		delete from employee where fname='e1';
+
+DML
+insert
+select
+update
+delete
+
+DDL
+drop table
+create
+alter
+
+drop table employee;
+
+
+SQL PRIMARY KEY Constraint
+The PRIMARY KEY constraint uniquely identifies each record in a table.
+
+Primary keys must contain UNIQUE values, and cannot contain NULL values.
+
+A table can have only ONE primary key; and in the table, this primary key can consist of single or multiple columns (fields).
+
+SQL PRIMARY KEY on CREATE TABLE
+The following SQL creates a PRIMARY KEY on the "ID" column when the "Persons" table is created:
+
+MySQL:
+
+CREATE TABLE Persons (
+    ID int NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int,
+    PRIMARY KEY (ID)
+);
+
+
+create table emp(
+		empid varchar(100) primary key,
+		fname varchar(100),
+		lastname varchar(100),
+		age int2,
+		salary float4  
+	    )
+
+  select * from emp;
+		insert into emp values (101,'e1','22',50,50000);
+        insert into emp values (102,'e2','eee',35,125000);
+		insert into emp values (103,'ravi','kumar',35,125000);
+		// wrong duplicate value insert into emp values (103,'radha','kumar',35,125000);
+		insert into emp values (104,'radha','kumar',35,125000);
+
+
+
+unique constrain
+
+SQL UNIQUE Constraint
+The UNIQUE constraint ensures that all values in a column are different.
+
+Both the UNIQUE and PRIMARY KEY constraints provide a guarantee for uniqueness for a column or set of columns.
+
+However, you can have many UNIQUE constraints per table, but only one PRIMARY KEY constraint per table.
+
+Key Differences Between Primary key and Unique key:
+Primary key will not accept NULL values whereas Unique key can accept NULL values. A table can have only one primary key whereas there can be multiple unique key on a table.
+
+
+
+create table emp2(
+		empid varchar(100) primary key,
+		fname varchar(100),
+		lastname varchar(100),
+		age int2,
+		salary float4,
+		email_id varchar(100) unique,
+		adhar varchar(100) unique
+	    )
+		
+		select * from emp2;
+		
+
+		insert into emp2 values (102,'e2','eee',35,125000,'a@gmai.com','2424sfsger4646');
+		error insert into emp2 values (103,'ravi','kumar',35,125000,'rav@gmai.com','2424sfsger4646');
+		error insert into emp2 values (104,'radha','kumar',35,125000,'rav@gmai.com','2424sfsger4646');
+		
+		insert into emp2 values (102,'e2','eee',35,125000,'a@gmai.com','2424sfsger4646');
+		insert into emp2 values (103,'ravi','kumar',35,125000,'rav@gmai.com','ravi2424sfsger4646');
+		insert into emp2 values (104,'radha','kumar',35,125000,'dadh@gmai.com','rad2424sfsger4646');
+
+
+        insert into emp2 values (104,'radha','kumar',35,125000,'dadh@gmai.com',null);
+        insert into emp2 values (105,'radha','kumar',35,125000,'rrh@gmai.com',null);
+      // wrong records  insert into emp2 values (null,'radha','kumar',35,125000,'rrddh@gmai.com',null);
+
+
+
+Constrains
+The following constraints are commonly used in SQL:
+
+NOT NULL - Ensures that a column cannot have a NULL value
+UNIQUE - Ensures that all values in a column are different
+PRIMARY KEY - A combination of a NOT NULL and UNIQUE. Uniquely identifies each row in a table
+FOREIGN KEY - Prevents actions that would destroy links between tables
+CHECK - Ensures that the values in a column satisfies a specific condition
+DEFAULT - Sets a default value for a column if no value is specified
+CREATE INDEX - Used to create and retrieve data from the database very quickly
+
+
+
+insert into emp values (101,'e1','22',50,50000);
+        insert into emp values (102,'e2','eee',35,125000);
+		insert into emp values (103,'ravi','kumar',35,125000);
+		// wrong duplicate value insert into emp values (103,'radha','kumar',35,125000);
+		insert into emp values (104,'radha','kumar',35,125000);
+		
+		
+		
+		create table emp2(
+		empid varchar(100) primary key,
+		fname varchar(100),
+		lastname varchar(100),
+		age int2,
+		salary float4,
+		email_id varchar(100) unique,
+		adhar varchar(100) unique
+	    )
+		
+		select * from emp2;
+		
+		insert into emp2 values (102,'e2','eee',35,125000,'a@gmai.com','2424sfsger4646');
+		insert into emp2 values (103,'ravi','kumar',35,125000,'rav@gmai.com','2424sfsger4646');
+		insert into emp2 values (104,'radha','kumar',35,125000,'rav@gmai.com','2424sfsger4646');
+		
+		insert into emp2 values (102,'e2','eee',35,125000,'a@gmai.com','2424sfsger4646');
+		insert into emp2 values (103,'ravi','kumar',35,125000,'rav@gmai.com','ravi2424sfsger4646');
+		insert into emp2 values (104,'radha','kumar',35,125000,'dadh@gmai.com','rad2424sfsger4646');
+
+
+--composite key
+combination of more than one column as primary key
+
+  		create table cus(
+		empid varchar(100),
+		fname varchar(100),
+		lastname varchar(100),
+		age int2,
+		salary float4,
+		email_id varchar(100) unique,
+		adhar varchar(100) unique,
+		PRIMARY KEY (fname, lastname)); 
+	   
+		insert into cus values (102,'ravi','kumar',35,125000,'a@gmai.com','2424sfsger4646');
+		insert into cus values (103,'ravi','sathya',35,125000,'a1@gmai.com','12424sfsger4646');
+		insert into cus values (104,'ravi1','kumar',35,125000,'a2@gmai.com','212424sfsger4646');
+        select * from cus;
+
+
+-- foreign key
+
+  		create table cus_det1(
+		cusid varchar(100) primary key,
+		cusname varchar(100) not null,
+		email_id varchar(100) unique not null,
+		gender char(1),
+		acno1  varchar(100) not null,
+		acno2  varchar(100) not null
+		);
+
+			select * from cus_det1;
+			
+--parent table
+        create table cus_det2(
+		cusid varchar(100) primary key,
+		cusname varchar(100) not null,
+		email_id varchar(100) unique not null,
+		gender char(1) not null
+		);
+		-- retrive record
+		select * from cus_det2;
+
+
+		--child table
+		create table account(
+		account_no  varchar(50) unique not null,
+		customer_id varchar(100) ,
+		amount float4 not null CHECK(salary >= 0),
+		status char(3)  not null DEFAULT 'IA',
+		FOREIGN KEY (customer_id) REFERENCES cus_det2(cusid)
+		);
+			select * from account;
+			
+			-- enter record in parent table--------------
+			insert into cus_det2 values('300','sam','sam@gmail.com','M');
+			insert into cus_det2 values('301','arthi','arithi@gmail.com','F');
+			insert into cus_det2 values('302','logesh','lo@gmail.com','F');
+			insert into cus_det2 values('303','saravanan','sara@gmail.com','M');
+			insert into cus_det2(cusid,cusname,email_id,gender) values('304','adhi','adhi@gmail.com','M');
+
+            select * from cust_det2;
+
+			-- enter record in child table--------------
+			insert into account values('icici101','300',2000,'A');
+			insert into account values('ici3452','301',10000,'A');
+			insert into account values('ici666','302',10000);
+			insert into account values('icici3421','300',200000,'A');
+			insert into account values('icici444','300',-200,'A');
+			
+			select * from account;
+
+
+        -- check constrain
+		create table acc(
+		account_no  varchar(50) unique not null,
+		amount float4 not null CHECK(amount >= 0)
+		);
+		
+		-- insert record
+		insert into acc values('icici101',900);
+		
+		-- retrive record
+        select * from acc;
+
+
+
+
+-- join query
+
+SQL JOIN
+A JOIN clause is used to combine rows from two or more tables, based on a related column between them.
+
+Cross Join
+A cross join is a type of join that returns the Cartesian product of rows from the tables in the join.
+In other words, it combines each row from the first
+table with each row from the second table
+
+INNER JOIN
+The INNER JOIN keyword selects records that have matching values in both tables.
+
+
+
+cus_det2
+account
+
+--  retrive all account for a customer by customer id
+
+select * from cus_det2;
+select * from account;
+
+--cross join
+select * from
+cus_det2 c,
+account a;
+
+select count(*) from
+cus_det2 c,
+account a;
+
+
+
+select * from cus_det2 where cusid='300';
+select * from account where customer_id='300';
+
+
+select count(*) from
+cus_det2 ,
+account 
+where cusid='300' and cusid = customer_id;
+
+-- 25 record
+select count(*) from
+cus_det2 c,
+account a;
+
+-- 5 record
+select *  from
+cus_det2 ,
+account 
+where cusid='300'
+
+--3 record
+select *  from
+cus_det2 ,
+account 
+where cusid='300' and cusid = customer_id;
+
+SQL Aliases
+SQL aliases are used to give a table, or a column in a table, a temporary name.
+Aliases are often used to make column names more readable.
+An alias only exists for the duration of that query.
+An alias is created with the AS keyword.
+
+Alias Column Syntax
+SELECT column_name AS alias_name
+FROM table_name;
+
+-- query  by table  name
+select *  from
+cus_det2 ,
+account 
+where cusid='300' and cusid = customer_id;
+
+
+-- query using alias name
+select *  from
+cus_det2 c,
+account a
+where c.cusid='300' and c.cusid = a.customer_id;
+
+--  amount more the 150000
+select *  from
+cus_det2 c,
+account a
+where c.cusid='300' and c.cusid = a.customer_id  and amount>150000;
+
+--  amount less than  150000
+select *  from
+cus_det2 c,
+account a
+where c.cusid='300' and c.cusid = a.customer_id  and amount<150000;
+
+
+
+SQL LEFT JOIN Keyword
+The LEFT JOIN keyword returns all records from the left table (table1), and the matching records from the right table (table2). 
+The result is 0 records from the right side, if there is no match.
+
+LEFT JOIN Syntax
+SELECT column_name(s)
+FROM table1
+LEFT JOIN table2
+ON table1.column_name = table2.column_name;
+
+-- left join
+select *  from
+cus_det2  left join
+account ON  cusid = customer_id;
+
+-- order by customer id
+select *  from
+cus_det2  left join
+account ON  cusid = customer_id order by cusid;
+-- order by customer id by using null comlumn will give wrong answer , because of null 
+-- use customer_id column in account table you will get wrong answer as there is null column
+
+
+SQL RIGHT JOIN Keyword
+The RIGHT JOIN keyword returns all records from the right table (table2), and the matching records from the left table (table1). The result is 0 records from the left side, if there is no match.
+
+RIGHT JOIN Syntax
+SELECT column_name(s)
+FROM table1
+RIGHT JOIN table2
+ON table1.column_name = table2.column_name;
+
+
+-- right join
+select *  from
+cus_det2  right join
+account ON  cusid = customer_id;
+
+select *  from
+cus_det2  right join
+account ON  cusid = customer_id order by customer_id;
+
+
+
+SQL FULL OUTER JOIN Keyword
+The FULL OUTER JOIN keyword returns all records when there is a match in left (table1) or right (table2) table records.
+
+Tip: FULL OUTER JOIN and FULL JOIN are the same.
+
+FULL OUTER JOIN Syntax
+SELECT column_name(s)
+FROM table1
+FULL OUTER JOIN table2
+ON table1.column_name = table2.column_name
+WHERE condition;
+
+full outer join example table
+Table
+shift  -  add three shift  --  shift id(sid) and shift name (s_name) value MS , AFS , NS
+employee - add 6 employee , 2 to shift 1  and 4 to shift 2 , for shift 3 dontn't add any employee
+
+--full outer join
+select *  from
+cus_det2  full outer join
+account ON  cusid = customer_id order by customer_id;
+
+		create table shift(
+		shift_id  int2 primary key,
+		description varchar(20) not null unique
+		);
+		
+		  --  employee table
+		create table emp_det(
+		emp_id  varchar(50) primary key,
+		fname varchar(50) not null,
+		age int2 not null,
+		city varchar(50) not null,
+		shift_id int2,
+		FOREIGN KEY (shift_id) REFERENCES shift(shift_id)
+		);
+	
+		
+		insert into shift(shift_id,description) values(1,'Morning Shift');
+		insert into shift(shift_id,description) values(2,'Afternoon Shift');
+		insert into shift(shift_id,description) values(3,'Night Shift');
+		insert into shift(shift_id,description) values(4,'Regular Shift');
+        select * from shift;
+
+      	
+ 		insert into emp_det values(101,'vijay',23,'chennai',1);
+		insert into emp_det values(102,'ravi',22,'chennai',1);
+ 		insert into emp_det values(103,'kamal',25,'banglore',3);
+ 		insert into emp_det values(104,'kumar',22,'mumbai',2);
+		insert into emp_det values(105,'santosh',21,'chennai',1);
+		insert into emp_det values(106,'lavanya',21,'delhi',null);
+		insert into emp_det values(107,'ganesh',24,'mumbai',null);
+
+        select * from emp_det;
+
+        -- full outer join query
+		select *  from
+		emp_det emp full outer join
+		shift s ON  s.shift_id = emp.shift_id;
+		
+		select *  from
+		emp_det emp left join
+		shift s ON  s.shift_id = emp.shift_id;
+
+		select *  from
+		emp_det emp right outer join
+		shift s ON  s.shift_id = emp.shift_id;
+
+		
+		-- self Join
+		-- retrive all customer whose city is as same as vijay city
+		select *  from
+		emp_det e1 , emp_det e2 where e1.fname='vijay' and e1.city = e2.city
+		
+		select e2.fname , e2.city , e2.emp_id  from
+		emp_det e1 , emp_det e2 where e1.fname='vijay' and e1.city = e2.city
+		
+		--cross join
+		select *  from emp_det e1 , emp_det e2
+
+
+		select *  from
+		emp_det e1 , emp_det e2 where e1.fname = e2.fname and e1.city = e2.city order by e1.city
+		
+		--count  by group
+		select count(*) , e1.city  from
+		emp_det e1 , emp_det e2 where e1.fname = e2.fname and e1.city = e2.city 
+		group by e1.city
+		
+Having count 
+		--having count
+		select count(*) , e1.city  from
+		emp_det e1 , emp_det e2 where e1.fname = e2.fname and e1.city = e2.city 
+		group by e1.city having count(e1.city)>1;
+
+
+
+
+The SQL GROUP BY Statement
+The GROUP BY statement groups rows that have the same values into summary rows, like "find the number of customers in each country".
+
+The GROUP BY statement is often used with aggregate functions (COUNT(), MAX(), MIN(), SUM(), AVG()) to group the result-set by one or more columns.
+
+GROUP BY Syntax
+SELECT column_name(s)
+FROM table_name
+WHERE condition
+GROUP BY column_name(s)
+ORDER BY column_name(s);
+
+-- group by
+select  sum(amount), customer_id from account group by customer_id;
+select  sum(amount), customer_id from account group by customer_id order by customer_id;
+
+
+
+
+
+
+
+
+
