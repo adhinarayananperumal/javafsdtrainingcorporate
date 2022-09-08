@@ -677,3 +677,6 @@ select  sum(amount), customer_id from account group by customer_id order by cust
 
 
 
+
+
+

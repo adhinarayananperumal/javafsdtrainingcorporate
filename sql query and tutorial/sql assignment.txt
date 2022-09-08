@@ -1,0 +1,28 @@
+
+
+Design table for Customer management and bank account management , write query for below condition , add needed column as necessary , use all needed constrain
+
+Table :  Bank stm
+        country - country_id , name_name , code_code 
+        state - state_id , state_name , state_code , country_id
+	addressType - address_type_id , address_type
+	customer - customer_id , fname ,  gender , mobile , 16
+	address - address_id, street , area , city , state , country, customer_id, address_type
+        account_type -> account_type_id , desc ,
+	account -  acc_no , amount , status, customer_id , account_type
+	citi23456,45000,a,103 , account type 55
+       
+
+
+Query-
+
+select all customer who belongs to same city of customer id 101  - self join
+
+Display full customer information customer ,account , account type, address , state , country
+
+Display all customer from tamilnadu
+
+Display all customer with their account details irespective of account present or not (create one customer with no account detail)
+
+Display a customer with account details. customer id 101
+

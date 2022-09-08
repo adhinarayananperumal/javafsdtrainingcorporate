@@ -1,0 +1,78 @@
+1) What is the full form of SQL?
+
+A. Structured Query List
+B.Structure Query Language
+C.Sample Query Language
+D.None of these.
+Answer :  B
+
+
+
+2) Which statement does not use the same number of bytes and the byte usage depends on the input data?
+A Varchar
+B Char
+C Both Varchar and Char
+D None of the above
+Answer :  A
+
+3) The maximum length of a column of type “char” is _______?
+A 255 bytes
+B 65, 535 bytes
+C 256 bytes
+D None of the above
+Answer :  A
+
+4)What statement is used to show the definition of an existing database?
+A SHOW CREATE DATABASE
+B SHOW DATABASE
+C SHOW CREATE
+D SHOW CREATE DATABASE TABLE
+Answer :  A
+
+5)In MySQL databases, the structure representing the organizational views of all databases is _________ ?
+views of all databases is _________ ?
+A View 
+B Schema
+C Instance
+D Table
+Answer :  B
+
+
+6)The value of Primary key
+A can be duplicated
+B can be null
+C cannot be null
+D none of these
+Answer :  C
+
+7) Drop table structure is
+A DML Statement
+B DDL Statement
+C Query Statement
+D None of the above
+Answer :  B
+
+
+8)Which join refers to join records from the write table that have no matching key in the left table are include in the result set:
+A. Left outer join
+B. Full outer join
+C. Right outer join
+D. Half outer join
+Answer :  C
+
+9)A attribute in a relation is a foreign key if the _______ key from one relation is used as an attribute in that relation .
+A. Candidate
+B. Primary
+c. Super
+D. Sub
+Answer :  C
+
+10) A relational database consists of a collection of
+A. Table
+B. Fields
+C. Records
+D. Keys
+
+Answer :  A
+
+
