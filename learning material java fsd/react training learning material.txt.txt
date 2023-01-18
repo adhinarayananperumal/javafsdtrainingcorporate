@@ -1,4 +1,20 @@
 
+
+es6
+Dom
+environment  
+nodejs , visual studio code
+function
+module
+let
+constant
+jsx
+props
+state
+hooks  usestate , useeffect , router , crud , redux
+
+docker
+git 
 React is an open source, JavaScript library for developing user interface (UI) in web application 
 also ReactJS is a simple, feature rich, component based JavaScript UI library.
 
